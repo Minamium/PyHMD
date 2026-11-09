@@ -27,8 +27,13 @@ int main(int argc,char** argv) {
                 if(k==ENE)expected=std::max(expected,p.p_floor);
                 double difference=std::abs(actual[k]-expected);
                 maximum=std::max(maximum,difference);++count;
-                if(!std::isfinite(actual[k]) || difference>1e-14*std::max(1.,std::abs(expected)))
+                if(!std::isfinite(actual[k]) || difference>1e-14*std::max(1.,std::abs(expected))) {
+                    std::cerr<<std::setprecision(17)<<"PPM mismatch: spherical="<<spherical
+                             <<" cell=("<<i<<","<<j<<") dir="<<dir<<" side="<<side
+                             <<" component="<<k<<" actual="<<actual[k]<<" expected="<<expected
+                             <<" difference="<<difference<<'\n';
                     throw std::runtime_error("batched PPM changed a reconstructed state");
+                }
                 if(from_cache[k]!=actual[k])throw std::runtime_error("cached PPM changed a reconstructed state");
                 double scalar_left,scalar_right;
                 reconstructed_component_pair(cached.primitive_cache,i,j,dir,k,m,cached,scalar_left,scalar_right);

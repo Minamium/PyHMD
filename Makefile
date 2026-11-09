@@ -12,6 +12,8 @@ test-python: cpu
 	PYTHONPATH=src python3 -m unittest discover -s tests/python -v
 test: cpu
 	python3 tests/verify.py --binary build/pymhd_cpu --output "$(TEST_OUTPUT)"
+	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/reconstruction_equivalence.cpp -o build/reconstruction_equivalence
+	build/reconstruction_equivalence
 	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/ct_invariants.cpp -o build/ct_invariants
 	build/ct_invariants
 	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/paper_initial.cpp -o build/test_paper_initial
@@ -30,8 +32,6 @@ test: cpu
 	build/strong_contact
 	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/adiabatic_flow.cpp -o build/adiabatic_flow
 	build/adiabatic_flow
-	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/reconstruction_equivalence.cpp -o build/reconstruction_equivalence
-	build/reconstruction_equivalence
 	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/boundary_scan.cpp -o build/boundary_scan
 	build/boundary_scan
 	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/eta_cache.cpp -o build/eta_cache
