@@ -2,10 +2,12 @@
 // implementation across both coordinates, all variables, and irregular states.
 #include "pymhd/setup.hpp"
 #include "pymhd/solver.hpp"
+#include <iomanip>
+#include <limits>
 #include <random>
 int main(int argc,char** argv) {
     World world(argc,argv);std::mt19937_64 generator(14073136);
-    std::uniform_real_distribution<double> random(0.,1.);double maximum=0;long count=0;
+    std::uniform_real_distribution<double> random(0.,1.);double maximum=0,maximum_scaled=0;long count=0;
     for(int spherical=0;spherical<2;++spherical) {
         Parameters p=setup_case_defaults(spherical?DISK:ALFVEN);p.nx=64;p.ny=16;
         Mesh mesh(p,world);auto m=mesh.view;std::vector<State> states(m.tx*m.ty);
@@ -26,12 +28,22 @@ int main(int argc,char** argv) {
                 if(k==RHO)expected=std::max(expected,p.rho_floor);
                 if(k==ENE)expected=std::max(expected,p.p_floor);
                 double difference=std::abs(actual[k]-expected);
+                // The scalar and batched expressions can be optimized differently.
+                // Bound their rounding difference using the INPUT stencil scale:
+                // signed interpolation weights can cancel large entropy samples.
+                // Cache/retry/flux comparisons below still require exact equality.
+                double scale=std::max(1.,std::abs(expected));
+                for(int offset=-2;offset<=2;++offset)
+                    scale=std::max(scale,std::abs(get_primitive(states.data(),i+(dir==0?offset:0),j+(dir==1?offset:0),m,p)[k]));
+                double tolerance=64*std::numeric_limits<double>::epsilon()*scale;
                 maximum=std::max(maximum,difference);++count;
-                if(!std::isfinite(actual[k]) || difference>1e-14*std::max(1.,std::abs(expected))) {
+                maximum_scaled=std::max(maximum_scaled,difference/scale);
+                if(!std::isfinite(actual[k]) || !std::isfinite(expected) || difference>tolerance) {
                     std::cerr<<std::setprecision(17)<<"PPM mismatch: spherical="<<spherical
                              <<" cell=("<<i<<","<<j<<") dir="<<dir<<" side="<<side
                              <<" component="<<k<<" actual="<<actual[k]<<" expected="<<expected
-                             <<" difference="<<difference<<'\n';
+                             <<" difference="<<difference<<" stencil_scale="<<scale
+                             <<" tolerance="<<tolerance<<'\n';
                     throw std::runtime_error("batched PPM changed a reconstructed state");
                 }
                 if(from_cache[k]!=actual[k])throw std::runtime_error("cached PPM changed a reconstructed state");
@@ -65,5 +77,6 @@ int main(int argc,char** argv) {
         for(int k=0;k<(m.nx+1)*(m.ny+1);++k){corner_emf(k,states.data(),potential_a.data(),original_emf.data(),m,p);corner_emf(k,solver.u.p,solver.a.p,optimized_emf.data(),m,cached);}
         for(size_t k=0;k<original_emf.size();++k)if(original_emf[k]!=optimized_emf[k])throw std::runtime_error("cache changed corner EMF");
     }
-    std::cout<<"PPM comparisons="<<count<<" maximum absolute difference="<<maximum<<'\n';
+    std::cout<<"PPM comparisons="<<count<<" maximum absolute difference="<<maximum
+             <<" maximum stencil-scaled difference="<<maximum_scaled<<'\n';
 }
