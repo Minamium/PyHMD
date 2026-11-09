@@ -20,7 +20,7 @@ struct Clock {double time=0,dt=0,next_output=0,output_interval=0;std::int64_t st
 inline std::string signature(const Parameters& p) {
     // Update the algorithm tag whenever a numerical change breaks restart
     // equivalence. A checkpoint is not a claim of CPU/GPU bitwise equivalence.
-    std::ostringstream o;o<<std::setprecision(17)<<"pymhd-nv10-rk3-metric-uct-revision7\n";
+    std::ostringstream o;o<<std::setprecision(17)<<"pymhd-nv10-rk3-metric-uct-revision8-periodic-wrap\n";
     o<<PYMHD_SOURCE_FINGERPRINT<<'\n';
     for(int v:{NV,NG,p.nx,p.ny,p.spherical,p.log_r,p.problem,p.lower1,p.upper1,p.lower2,p.upper2,
                p.cooling,p.eta_model,p.entropy_switch,p.ct_energy_correction,p.max_step_retries,p.reconstruction_cache,

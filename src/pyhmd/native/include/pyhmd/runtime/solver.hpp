@@ -31,6 +31,7 @@ public:
     Buffer<TransportVertex> transport_psi,trial_transport_psi;
     Buffer<State> transport_origin_state;
     Buffer<double> transport_origin_psi;
+    Buffer<double> periodic_flux_jump;
     bool transport_origin_set=false;
     double transport_origin_time=0;
     long long transport_origin_step=0;
@@ -53,6 +54,7 @@ public:
         a((m.tx+1)*(m.ty+1)),abase(a.n),astage(a.n),atmp(a.n),arhs(a.n),floors(m.nx*m.ny),floor_mass(floors.n),floor_energy(floors.n),boundary_energy(floors.n),
         send_l(NV*NG*m.ty+(NG+1)*(m.ty+1)),send_r(send_l.n),recv_l(send_l.n),recv_r(send_l.n),rates((m.nx*m.ny+127)/128),rate_result(1),mid_local(m.nx),mid_global(p.nx) {
         halo_size=static_cast<int>(send_l.n);floors.upload(std::vector<double>(floors.n,0));
+        if(world.size>1&&p.lower1==PERIODIC)periodic_flux_jump.allocate(m.ty+1);
         floor_mass.upload(std::vector<double>(floors.n,0));floor_energy.upload(std::vector<double>(floors.n,0));boundary_energy.upload(std::vector<double>(floors.n,0));
         resistive1.allocate(flux1.n);resistive2.allocate(flux2.n);resistive_a.allocate(a.n);
         ohmic_heat.allocate(floors.n);physical_heat.allocate(floors.n);
@@ -156,6 +158,15 @@ public:
         parallel_for((m.tx+1)*NG,[=]HD(int k){theta_boundary(k,state,potential_a,mv,pp);});
 #ifdef PYMHD_MPI
         if(world.size>1) {
+            // Psi(x+L,y)-Psi(x,y) carries the net transverse flux. Copying it
+            // periodically without this offset corrupts nonzero mean By.
+            std::vector<double> periodic_jump;
+            if(p.lower1==PERIODIC) {
+                auto ends=periodic_flux_jump.p;
+                parallel_for(m.ty+1,[=]HD(int j){ends[j]=lo?-potential_a[mv.vertex(NG,j)]:(hi?potential_a[mv.vertex(NG+mv.nx,j)]:0.);});
+                auto local=periodic_flux_jump.download();periodic_jump.resize(m.ty+1);
+                MPI_Allreduce(local.data(),periodic_jump.data(),m.ty+1,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+            }
             int left=lo?(p.lower1==PERIODIC?world.size-1:MPI_PROC_NULL):world.rank-1;
             int right=hi?(p.upper1==PERIODIC?0:MPI_PROC_NULL):world.rank+1;
             double* sl=send_l.p;double* sr=send_r.p;
@@ -167,19 +178,24 @@ public:
             auto hl=send_l.download(),hr=send_r.download();std::vector<double>rl(halo_size,0),rr(halo_size,0);
             MPI_Sendrecv(hl.data(),halo_size,MPI_DOUBLE,left,20,rr.data(),halo_size,MPI_DOUBLE,right,20,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
             MPI_Sendrecv(hr.data(),halo_size,MPI_DOUBLE,right,21,rl.data(),halo_size,MPI_DOUBLE,left,21,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+            if(!periodic_jump.empty())for(int j=0;j<=m.ty;++j)if(periodic_jump[j]!=0)for(int ii=0;ii<=NG;++ii) {
+                const int k=NV*NG*m.ty+j*(NG+1)+ii;
+                if(lo)rl[k]-=periodic_jump[j];if(hi)rr[k]+=periodic_jump[j];
+            }
             recv_l.upload(rl);recv_r.upload(rr);const double* dl=recv_l.p;const double* dr=recv_r.p;
             parallel_for(halo_size,[=]HD(int k) {
                 int nstate=NV*NG*mv.ty;
                 if(k<nstate){int c=k%NV,ii=(k/NV)%NG,j=k/(NV*NG);if(left!=MPI_PROC_NULL)state[mv.cell(ii,j)][c]=dl[k];if(right!=MPI_PROC_NULL)state[mv.cell(NG+mv.nx+ii,j)][c]=dr[k];}
                 else {int q=k-nstate,ii=q%(NG+1),j=q/(NG+1);
-                    if(left!=MPI_PROC_NULL)potential_a[mv.vertex(ii,j)]=dl[k];
+                    if(left!=MPI_PROC_NULL&&!(lo&&pp.lower1==PERIODIC&&ii==NG))potential_a[mv.vertex(ii,j)]=dl[k];
                     if(right!=MPI_PROC_NULL&&ii<NG)potential_a[mv.vertex(NG+mv.nx+1+ii,j)]=dr[k];}
             });
             // Lower-rank owner supplies the duplicate CT interface vertex.
             std::vector<double> shared_send(m.ty+1),shared_recv(m.ty+1);
             for(int j=0;j<=m.ty;++j)shared_send[j]=hr[NV*NG*m.ty+j*(NG+1)+NG];
             MPI_Sendrecv(shared_send.data(),m.ty+1,MPI_DOUBLE,right,22,shared_recv.data(),m.ty+1,MPI_DOUBLE,left,22,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-            if(left!=MPI_PROC_NULL) {
+            if(lo&&!periodic_jump.empty())for(int j=0;j<=m.ty;++j)if(periodic_jump[j]!=0)shared_recv[j]-=periodic_jump[j];
+            if(left!=MPI_PROC_NULL&&!(lo&&p.lower1==PERIODIC)) {
                 std::vector<double> values(halo_size,0);std::copy(shared_recv.begin(),shared_recv.end(),values.begin());recv_l.upload(values);const double* vv=recv_l.p;
                 parallel_for(m.ty+1,[=]HD(int j){potential_a[mv.vertex(NG,j)]=vv[j];});
             }
