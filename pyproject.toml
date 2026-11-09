@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyhmd"
+version = "0.1.0"
+description = "Typed Python orchestration and C++/CUDA finite-volume resistive MHD"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Minamium"}]
+dependencies = []
+
+[project.optional-dependencies]
+analysis = ["numpy>=1.24"]
+viz = ["numpy>=1.24", "matplotlib>=3.7", "Pillow>=10"]
+test = ["numpy>=1.24"]
+
+[project.scripts]
+pyhmd = "pyhmd.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pyhmd*"]
+
+[tool.setuptools.package-data]
+pyhmd = ["presets/*.ini", "native/Makefile", "native/include/**/*.hpp", "native/src/*.cpp"]
+
+[project.urls]
+Repository = "https://github.com/Minamium/PyHMD"

@@ -1,0 +1,16 @@
+{
+  "baseline_source_fingerprint": "a9eabd4fff452e0a69b5785b62e454763cde1b524b343cde0c1503eb8f608b14",
+  "kineticeq_reference_commit": "cb61018319d4543ca44bfb63004577d82523965a",
+  "numerical_expressions_changed": false,
+  "legacy_header_sha256": {
+    "solver.hpp": "18f5829ec14dca50dfbf13589732c3a7d37596ec612a55746e3871a985ea48bb",
+    "checkpoint.hpp": "842429705d21aba409a8afe3c977c44a015914907fe34096f1d4dac9f242e0c7",
+    "model.hpp": "13c9dae5dba081c6023859e11b264099dda413c56d71639b203d1ceae1217149",
+    "paper_initial.hpp": "163f1563c0b4f16a72d5e9ea7d5e151f9ff26c5543154867934c5bccb4dd10ad",
+    "gpu_boundary.hpp": "b44fa6295e603d0d8ff4c92d15fdcc27b374d7e054b94f6a440aaaeb8d36b2eb",
+    "setup.hpp": "9dd332d84078d815985e44eda20949a74d37f30aaf4ca3b07e198c83c46ba8bf",
+    "transport_output.hpp": "f9acff8118fd7bde6df0589c55af7261a67a96cf277a332eab66fabbb4ffe055",
+    "backend.hpp": "4eb18984a32424cd7ed03612b6fcfcaba6b41a2799d5397c818f5a40b3ebab29",
+    "metric_reconstruction.hpp": "3d47312d8582c748643a8bdcd8d7ab7b1eb3e878be06453df296f5a7f1b39f2b"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "config": {"problem": "thin_disk", "time": {"t_end": 1}},
+  "runtime": {"backend": "cuda"},
+  "result": {"out_dir": "runs/disk_cuda", "output_interval": 0.1, "checkpoint_interval": 0.1}
+}

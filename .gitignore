@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# PyHMD generated numerical artifacts
+/runs/
+/results/
+.build.lock
+*.build.log
+*.build.json

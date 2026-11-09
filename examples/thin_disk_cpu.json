@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "config": {
+    "problem": "thin_disk",
+    "grid": {"nx1": 64, "nx2": 32},
+    "time": {"t_end": 0.1}
+  },
+  "runtime": {"backend": "cpu"},
+  "result": {"out_dir": "runs/disk_cpu", "output_interval": 0.05, "checkpoint_interval": 0.05}
+}

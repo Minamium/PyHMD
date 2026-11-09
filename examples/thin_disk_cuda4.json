@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "config": {"problem": "thin_disk", "time": {"t_end": 1}},
+  "runtime": {"backend": "cuda", "mpi": true, "ranks": 4, "launcher": ["mpirun"]},
+  "result": {"out_dir": "runs/disk_cuda4", "output_interval": 0.1, "checkpoint_interval": 0.1, "transport_diagnostics": true}
+}

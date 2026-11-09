@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "scope": "same compiler/platform, full CSV and binary U/Psi/clock bits; no GPU or scientific equivalence claim",
+  "binary_sha256": {
+    "reference": "65d4ebdf35e8feaa96d347e6ce24bc4ced7942071ad163096022a67d07638755",
+    "candidate": "f73ad8fcad85d15ffef0af9bb33f5e0cb86aab9a0b204459d2f2740c1d01a722"
+  },
+  "cases": [
+    {
+      "case": "uniform",
+      "grid": [
+        32,
+        16
+      ],
+      "step": 8,
+      "time": 0.05,
+      "csv_bits_equal": true,
+      "U_Psi_bits_equal": true,
+      "clock_bits_equal": true
+    },
+    {
+      "case": "alfven",
+      "grid": [
+        64,
+        4
+      ],
+      "step": 36,
+      "time": 0.1,
+      "csv_bits_equal": true,
+      "U_Psi_bits_equal": true,
+      "clock_bits_equal": true
+    },
+    {
+      "case": "diffusion",
+      "grid": [
+        64,
+        4
+      ],
+      "step": 30,
+      "time": 0.05,
+      "csv_bits_equal": true,
+      "U_Psi_bits_equal": true,
+      "clock_bits_equal": true
+    },
+    {
+      "case": "brio_wu",
+      "grid": [
+        64,
+        4
+      ],
+      "step": 28,
+      "time": 0.03,
+      "csv_bits_equal": true,
+      "U_Psi_bits_equal": true,
+      "clock_bits_equal": true
+    },
+    {
+      "case": "thin_disk",
+      "grid": [
+        64,
+        32
+      ],
+      "step": 10,
+      "time": 0.1,
+      "csv_bits_equal": true,
+      "U_Psi_bits_equal": true,
+      "clock_bits_equal": true
+    },
+    {
+      "case": "thin_disk",
+      "grid": [
+        600,
+        128
+      ],
+      "step": 100,
+      "time": 0.1053304632541587,
+      "csv_bits_equal": true,
+      "U_Psi_bits_equal": true,
+      "clock_bits_equal": true
+    }
+  ]
+}

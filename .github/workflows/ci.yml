@@ -1,0 +1,37 @@
+name: CPU and package contracts
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test,viz]'
+      - run: make test
+      - run: make test-python
+      - run: pyhmd run examples/thin_disk_cpu.json --out runs/ci_smoke
+      - run: pyhmd validate runs/ci_smoke
+      - run: pyhmd render runs/ci_smoke
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip wheel --no-deps . -w dist
+      - run: python -m pip install --no-deps dist/*.whl
+      - name: Build and run installed bundled native sources outside checkout
+        working-directory: /tmp
+        run: |
+          pyhmd build --backend cpu --build-dir /tmp/pyhmd-wheel-build
+          pyhmd init --problem alfven --output /tmp/pyhmd-wheel.json
+          pyhmd run /tmp/pyhmd-wheel.json --build-dir /tmp/pyhmd-wheel-build --out /tmp/pyhmd-wheel-result
+          pyhmd validate /tmp/pyhmd-wheel-result
