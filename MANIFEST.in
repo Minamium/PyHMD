@@ -1,4 +1,5 @@
-include Makefile LICENSE README.md
+include Makefile LICENSE README.md README.ja.md AGENTS.md
+recursive-include .agents/skills *.md *.yaml
 include src/main.cpp
 recursive-include src/pyhmd/native *.hpp *.cpp Makefile *.py
 recursive-include src/pyhmd/presets *.ini

@@ -1,6 +1,9 @@
 # HPC and native execution
 
-CPU/CUDA、MPIの有無はビルド時に明示します。Make方式を維持し、新しいCMakeを要求しません。
+[English](hpc.md) | [日本語](ja/hpc.md) | [Index](index.md)
+
+Choose CPU/CUDA and MPI explicitly at build time. GNU Make is the build system;
+CMake is not required.
 
 ```bash
 make cpu
@@ -9,12 +12,16 @@ make cuda-single CUDA_SM=70 NVCC=nvcc
 make cuda CUDA_SM=70 NVCC=nvcc MPICXX=mpicxx
 ```
 
-Python APIの`build_native`/`pyhmd build`はbundled sourceから同じtargetを作ります。
-`CXX`、`NVCC`、`MPICXX`、`CXXFLAGS`、`CUDAFLAGS`でtoolchainを明示できます。
-build先はcheckoutでは`build/`、wheelではXDG cache下、または`--build-dir`/`PYHMD_BUILD_DIR`です。
-自動コンパイル・SSH・qsub/sbatchは行いません。HPCでのビルド/計算はサイトが許可した割当内で行ってください。
+`build_native()` and `pyhmd build` compile the same bundled targets. Set `CXX`,
+`NVCC`, `MPICXX`, `CXXFLAGS`, or `CUDAFLAGS` for the toolchain. CUDA+MPI currently
+uses Open MPI-compatible `mpicxx --showme:compile` / `--showme:link`; other wrappers
+need a Makefile adaptation. Example SM targets: V100=70, A30=80, GH200=90.
 
-## MPI from the Engine
+Builds default to checkout `build/` or a fingerprint-specific XDG cache for a
+wheel; override with `--build-dir` or `PYHMD_BUILD_DIR`. PyHMD does not automatically
+compile, SSH, or call `qsub`/`sbatch`. Use the allocation permitted by the site.
+
+## Launch native ranks from the Engine
 
 ```python
 import os
@@ -25,22 +32,35 @@ spec = spec.with_runtime(launcher=("mpirun", "--hostfile", os.environ["PBS_NODEF
 result = spec.engine(out_dir="runs/my_allocated_job").run()
 ```
 
-Engine自身を`mpirun -np 4 python ...`で多重起動しません。
-native MPI executableが各rankのCUDA deviceとMPI lifetimeを所有します。
-RuntimeConfigはGPU番号を上書きしません。schedulerが指定したCUDA_VISIBLE_DEVICESを保持します。
-径方向の各rankに最低3セル必要です。
+Do not wrap the Engine in `mpirun -np 4 python ...`. It launches native MPI ranks
+once and appends `-np N` to its launcher array. Use a compatible MPI launcher;
+`srun` belongs on the direct-native path below.
 
-## Direct native path
+Native code owns MPI lifetime and device mapping, preserving scheduler-provided
+`CUDA_VISIBLE_DEVICES`. Each rank uses its local rank inside that allocation.
+The first-coordinate decomposition requires at least three owned cells per rank.
+Halos/shared face tables are host-staged. GPU-aware MPI and communication/compute
+overlap are not implemented.
 
-Python orchestrationを使わず、既存手順と同じように実行できます。
-この場合は`result.json`やbinaryの固定コピーは作られません。
+## Direct native execution
+
+This path writes native output without the Engine's `result.json` or frozen binary.
 
 ```bash
+# Inside an existing PBS allocation.
 mpirun --hostfile "$PBS_NODEFILE" -np 4 build/pyhmd_cuda \
   --config configs/thin_disk.ini --t-end 1 \
   --checkpoint-interval 0.1 --output runs/native_example
+
+# Inside an existing Slurm allocation with the site's MPI integration enabled.
+srun --ntasks=4 build/pyhmd_cuda \
+  --config configs/thin_disk.ini --t-end 1 --output runs/slurm_native_example
 ```
 
-`examples/pbs_gpu4.pbs.example`は単一ノードの雛形です。queue/group/moduleはサイトごとに設定してください。
-MPI haloはhost stagingで、GPU-aware MPIや通信計算overlapを実装したとは扱いません。
-今回の新構成はCPUで検証しており、CUDA/MPIの再ビルドと実測は別途必要です。
+[pbs_gpu4.pbs.example](../examples/pbs_gpu4.pbs.example) is a single-node template.
+Supply the site's queue, account/group, and modules. These are launch examples,
+not universal allocation requests. Public files contain no personal connections.
+
+This layout has CPU validation. CUDA/MPI builds, correctness, profiling, and
+scaling need actual hardware checks. Compare GPU model, ranks, grid, accepted
+steps, physical time, retries/corrections, and output settings together.

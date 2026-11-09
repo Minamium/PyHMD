@@ -1,7 +1,10 @@
 # Configuration
 
-`Config`はproblemと数値モデル、`RuntimeConfig`は実行環境、`ResultOptions`は記録方針です。
-すべてfrozen dataclassで、JSONの未知キー・重複キー・非有限値・boolを整数として渡す指定を拒否します。
+[English](configuration.md) | [日本語](ja/configuration.md) | [Index](index.md)
+
+`Config` describes the problem and numerics, `RuntimeConfig` describes execution,
+and `ResultOptions` describes recording. All are frozen dataclasses. Unknown or
+duplicate JSON keys, nonfinite numbers, and booleans passed as integers are rejected.
 
 ```json
 {
@@ -20,32 +23,40 @@
 }
 ```
 
-pathは実行時のcwdを基準に解決します。specファイルの所在に暗黙にchdirしません。
-`--out`は出力先を上書き指定します。launcherはJSON配列であり、shell文字列として評価しません。
-INIの`#`/`;`/改行はnative parserの制限があるため、nativeへ渡すpath内では使用できません。
+Paths resolve from the execution working directory, not the spec file's directory.
+`--out` overrides the result path. A launcher is an argument array, not a shell
+command string. Native INI limitations prohibit `#`, `;`, and line breaks in paths
+passed to that parser.
 
-## Config groups
+## Configuration groups
 
-- `grid`: geometry、nx1/nx2、radial_grid、x1/x2のmin/max。
-- `physics`: gamma、gm、eta_model/eta、h/corona、mu0/mu_ref/b0、bend、alpha_m/chi、cooling、initial_equilibrium、wave_amplitude。
-- `numerics`: rho/p_floor、thermal_recovery、internal_energy_sync、dual_energy_eta、entropy閾値、CT補正、retry、cache、metric_ppm、ct_emf_scheme、cfl_staggered。
-- `boundary`: lower1/upper1/lower2/upper2、inner_normal_field。
-- `time`: cfl、t_end、max_steps。
+| Group | Settings |
+| --- | --- |
+| `grid` | `geometry`, `nx1/nx2`, `radial_grid`, coordinate bounds |
+| `physics` | `gamma`, `gm`, `eta_model/eta`, `h/corona`, `mu0/mu_ref/b0`, `bend`, `alpha_m/chi`, `cooling`, `initial_equilibrium`, `wave_amplitude` |
+| `numerics` | Density/pressure floors, thermal recovery/sync, dual-energy and entropy thresholds, CT correction, retries, caches, metric PPM, CT EMF scheme, staggered CFL |
+| `boundary` | `lower1/upper1/lower2/upper2`, `inner_normal_field` |
+| `time` | `cfl`, `t_end`, `max_steps` |
 
-選択肢は`pyhmd.config`のdataclassが公開仕様です。
-model=`resistive_mhd`、scheme=`ppm_hll_ssprk3`、dtype=`float64`のみを登録しています。
-`thermal_recovery`など既存の比較optionを維持しています。HLLD、3D、FP32などの名前だけの追加はしていません。
+The dataclasses in [config.py](../src/pyhmd/config.py) define supported fields and
+choices. Only `resistive_mhd`, `ppm_hll_ssprk3`, and `float64` are registered for
+model, scheme, and dtype. Existing options such as `thermal_recovery` remain;
+HLLD, 3D, and FP32 are not selectable.
 
-辞書の部分指定はproblem presetへmergeします。dataclassを直接渡す場合は、そのdataclass全体を明示指定したものとして扱います。
-設定の型と基本範囲はPython、組合せ制約は`Engine.plan()`のnative検証が担当します。
-例えばCartesianのaxis境界、片側だけのperiodic、対応外の輸送診断は実行前に拒否します。
+Partial dictionaries merge with the problem preset. Passing a group dataclass
+instead supplies that entire group explicitly. Python checks types/basic ranges;
+`Engine.plan()` invokes native cross-option checks. Invalid Cartesian axis
+boundaries, one-sided periodic boundaries, and unsupported transport combinations
+are rejected before launch.
 
-## Native compatibility
+## INI compatibility and recording
 
-既存INIはsectionごとの同名キーを区別しない、nativeと同じflat-key契約です。
-未知キーや重複設定を拒否し、既存のentropy_switch/log_r等はcanonical fieldへ変換します。
-`RunSpec.load`は出力間隔・checkpoint・restartも取り込みます。
-`result.output_interval`と`log_interval`を省略するとproblem presetの値を使用します。
+INI follows the native flat-key contract: sections do not create namespaces.
+Unknown and duplicate settings are rejected; `entropy_switch` and `log_r` aliases
+become canonical fields. `RunSpec.load()` also loads output/checkpoint intervals
+and restart paths. Omitted `output_interval` and `log_interval` use problem presets.
 
-単純な数値integrity検査、輸送診断、科学的比較の設定を混同しません。
-特にtransport_diagnosticsはsphere/log disk・face_hll・evolveなどのnative制約を持ちます。
+Transport diagnostics have native restrictions, including the spherical/log
+disk, `face_hll`, and `evolve` choices. Select recording before the run: missing
+ledgers cannot be reconstructed as measured face-flux data. Keep output intervals
+fixed in trajectory/performance comparisons because they clip time steps.

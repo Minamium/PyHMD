@@ -1,37 +1,54 @@
 # Results and execution states
 
+[English](results.md) | [日本語](ja/results.md) | [Index](index.md)
+
 | Artifact | Contents |
 | --- | --- |
-| `result.json` | schema、設定、runtime、native能力、binary SHA、状態、artifact参照 |
-| `inputs/run.json` | 正規化された再実行用spec |
-| `inputs/native.ini` | nativeへ実際に渡した全設定 |
-| `inputs/pyhmd_*` | 実行に使ったbinaryの固定コピー |
-| `run.log` | native/MPIのstdoutとstderr |
-| `metadata.json`, `diagnostics.csv`, `status.json` | nativeの設定・物理量・到達/停止状態 |
-| `snapshot_*.csv` | セルデータ、時刻・step |
-| `checkpoint_step*/` | U/Ψ、clock、補正・面流束台帳。輸送診断時はsidecar |
+| `result.json` | Schema, config/runtime, native capabilities, binary SHA, status, artifact references |
+| `inputs/run.json` | Normalized run specification |
+| `inputs/native.ini` | Settings actually passed to native code |
+| `inputs/pyhmd_*` | Frozen copy of the executed binary |
+| `run.log` | Native/MPI stdout and stderr |
+| `metadata.json`, `diagnostics.csv`, `status.json` | Native settings, diagnostics, completion/stop state |
+| `snapshot_*.csv` | Cell data, time, and step |
+| `checkpoint_step*/` | U/Ψ, clock, correction/face-flux ledgers; transport sidecar when enabled |
 
-Engineは実行前に出力先を確認し、`result.json`を排他的に作成して所有を確定します。
-manifestは同じディレクトリ内のtemporary fileからrenameします。
-新しい計算を既存の非空結果へ混ぜません。
-キーボード中断/例外時は、そのEngineが起動したprocess群だけを終了処理してmanifestへ記録します。
+The Engine requires an absent or empty directory and claims it by exclusively
+creating `result.json`. Later updates use a temporary file and atomic rename in
+the same directory. It never appends a new run into nonempty results. On an
+interruption/exception it cleans up its own process group and records the outcome.
 
-| Native exit | Result status | Meaning |
-| --- | --- | --- |
-| 0 + 正しいt_end到達 | completed | 積分完了。科学的成功とは独立 |
-| 3 + max_steps | incomplete | step上限で途中終了 |
-| 4 + persistent_retries | stopped | 深いretryの連続で意図的停止 |
-| 他、またはstatus契約の不一致 | failed | SimulationError.resultから結果を読める |
+## Terminal states
 
-`Result.load`は旧metadata/status形式も読みます。plottingや数値配列の読込は要求時だけimportします。
-`Result.validate`は既存のstrict numerical integrity validatorで、floorがあれば不合格となります。
-`scientific_validation`は自動で成功に変更しません。
+| Native outcome | Result status | CLI exit | Meaning |
+| --- | --- | --- | --- |
+| 0 and expected `t_end` reached | `completed` | 0 | Integration completed; scientific success is separate |
+| 3 and `max_steps` | `incomplete` | 3 | Step limit before completion |
+| 4 and `persistent_retries` | `stopped` | 4 | Intentional stop after repeated deep retries |
+| Other failure or status mismatch | `failed` | 2 | Inspect the log; `SimulationError.result` exposes the result |
+
+Preparation/interruption can also produce `created`, `running`, or `interrupted`.
+`Result.load()` reads the manifest or legacy metadata/status output. Optional
+array/plotting dependencies load only when requested.
+
+`Result.validate()` is the strict numerical-integrity validator: floor events
+cause rejection. It does not certify the physical solution or automatically mark
+`scientific_validation` successful. Legacy runs need an explicit expected time,
+for example `pyhmd validate runs/legacy --expect-time 1`.
 
 ## Restart
 
-格子、rank分割、出力間隔、物理/数値設定、algorithm/source署名が一致する必要があります。
-新しいout_dirを指定し、RuntimeConfig.restartへcheckpointディレクトリを渡します。
-signatureに含まれないt_end/max_stepsなどは、保存時刻/stepより先に進める値へ変更できます。
-main binary形式version1、旧magic、metadata version2を維持していますが、今回のsource構成変更でfingerprintは変わっています。
-旧source世代のcheckpointを新版で黙って再開することはありません。
-将来の互換変換は通常restartとは分けて設計・検証する必要があります。
+Grid, rank decomposition, output interval, physical/numerical settings, and
+algorithm/source signatures must match. Set `RuntimeConfig.restart` to the
+checkpoint directory and choose a new output directory. Clock-limit fields
+excluded from the signature, such as `t_end`/`max_steps`, can extend beyond the
+saved clock. The CLI has
+no `--restart` switch: use Python or the existing INI `restart` setting.
+
+Binary format version 1, legacy magic, and metadata version 2 are retained, but
+the source fingerprint changes with this migration. Normal restart from an older
+source generation is rejected. A compatibility conversion would need separate
+validation; do not edit or bypass signatures to resume.
+
+See the [README restart example](../README.md) and
+[scientific status](scientific-status.md) before interpreting completion as reproduction.

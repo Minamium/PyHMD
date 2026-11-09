@@ -1,69 +1,74 @@
 # Architecture
 
+[English](architecture.md) | [日本語](ja/architecture.md) | [Index](index.md)
+
 ```mermaid
 flowchart LR
   Config[Typed Config / RunSpec] --> Engine
   Runtime[RuntimeConfig / backend registry] --> Engine
-  Engine --> Plan[validated native command]
+  Engine --> Plan[Validated native command]
   Plan --> Native[C++ / CUDA application]
   Native --> Artifacts[U / Psi / ledgers / snapshots]
   Artifacts --> Result[Result + manifest]
-  Result --> Offline[offline validation / plotting]
+  Result --> Offline[Offline validation / plotting]
 ```
 
-Pythonは設定、明示的ビルド、起動、provenance、結果の読込を担当します。
-C++がMPIとCUDAのlifetimes、state、各RK段、retry、保存を所有します。
-Pythonから各stepの配列を往復させる設計にはしていません。
+Python owns configuration, explicit builds, launch, provenance, and result
+loading. Native C++ owns MPI/CUDA lifetimes, state, RK stages, retry, and saving.
+State arrays do not travel through Python at every step.
 
-## Python
+## Python layer
 
-| Module | Responsibility |
+| Module under `src/pyhmd/` | Responsibility |
 | --- | --- |
-| `config.py` | 現行設定の型・preset・INI変換、未知キーの拒否 |
-| `spec.py` | JSON/INIから同じRunSpecを生成 |
-| `engine.py` | plan、出力先の所有、native起動、終了状態の対応付け |
-| `runtime/` | MPIの有無、rank、launcher、既存binary、restart |
-| `backends/` | 実装済み4ビルドのregistry、明示的ビルドとsource指紋 |
-| `results/` | atomic manifest、lazy artifact参照、旧形式の読込 |
-| `diagnostics/` | 数値整合性・輸送検証・論文用snapshot推定 |
-| `plotting/` | 保存結果だけを使う図・動画・VTK |
+| `config.py` | Typed settings, presets, INI conversion, unknown-field rejection |
+| `spec.py` | A shared RunSpec for JSON, INI, and Python |
+| `engine.py` | Plans, output ownership, native launch, terminal-state mapping |
+| `runtime/` | Backend/MPI policy, rank count, launcher, binary, restart |
+| `backends/` | Four implemented build targets, explicit compilation, fingerprints |
+| `results/` | Atomic manifests, lazy artifact references, legacy result loading |
+| `diagnostics/` | Numerical integrity, transport checks, snapshot-based paper diagnostics |
+| `plotting/` | Figures, animation, and VTK from saved output |
 
-backendはCPU、CPU+MPI、CUDA、CUDA+MPIのみです。
-model/schemeを増やすための空のpluginや未実装optionは追加していません。
-Configは問題の数学、RuntimeConfigは実行環境、ResultOptionsは保存方針を表します。
-出力間隔はdtを切り詰めるため数値軌道にも影響します。保存方針も必ずprovenanceに残します。
+The registry contains CPU, CPU+MPI, CUDA, and CUDA+MPI, without placeholder
+models or solvers. `Config` describes the mathematical problem, `RuntimeConfig`
+describes execution, and `ResultOptions` describes recording. Output intervals
+clip time steps, so recording settings can affect the numerical trajectory and
+are included in provenance.
 
-## Native
+## Native layer
 
-ソースはwheelにも含めるため`src/pyhmd/native/`に配置しています。
-`include/`はその公開includeルートへのcheckout内aliasです。
+Sources live in `src/pyhmd/native/` so wheels can carry them. The checkout's
+`include/` aliases the bundled include directory.
 
-| `include/pyhmd/` | Responsibility |
+| Under `native/include/pyhmd/` | Responsibility |
 | --- | --- |
-| `core/types.hpp` | state、parameter POD、mesh view |
-| `config/native.hpp` | 既存INI/引数のparserと組合せ制約 |
-| `physics/` | MHD flux、抵抗率・電流のclosure |
-| `geometry/` | cell/face geometry、CT field access、mesh生成 |
-| `numerics/` | reconstruction、FV/CT RHS、熱回復、CFL |
-| `boundaries/` | physical ghosts、磁束関数境界、CUDA prefix scan |
-| `distributed/` | MPI lifetimeとrank/GPUの対応 |
-| `backend/` | host/device bufferとparallel loop |
-| `problems/` | builtin初期条件、円盤平衡、initialization |
-| `runtime/` | state/workspace所有、RK/retry、application、検証protocol |
-| `io/` | checkpoint、診断/snapshot出力 |
-| `diagnostics/` | accepted RK面流束とCT寄与の保存 |
+| `core/types.hpp` | State, parameter POD, mesh view |
+| `config/native.hpp` | INI/argument parsing and cross-option restrictions |
+| `physics/` | MHD fluxes and resistivity/current closures |
+| `geometry/` | Cell/face measures, CT field access, mesh construction |
+| `numerics/` | Reconstruction, FV/CT RHS, thermal recovery, CFL |
+| `boundaries/` | Physical ghosts, flux-function boundaries, CUDA prefix scan |
+| `distributed/` | MPI lifetime and rank/GPU mapping |
+| `backend/` | Host/device buffers and parallel loops |
+| `problems/` | Built-in initial states, disk equilibrium, initialization |
+| `runtime/` | State/workspace ownership, RK/retry, application, validation protocol |
+| `io/` | Checkpoints, diagnostics, snapshot output |
+| `diagnostics/` | Accepted RK face-flux and CT contribution ledgers |
 
-旧`include/pymhd/*.hpp`は互換includeです。旧テストの参照先を保つ一方、実定義を二重に持ちません。
-元の`Solver`はbuffersとRK/retryの所有者として残し、数値関数を各責務のheaderへ移しました。
-CUDAで渡すPODや既存checkpointのlayout、`PYMHD_*`内部macroは維持しています。
-native内部global symbolは現時点で安定した外部C++ APIとはしません。
+Legacy `include/pymhd/*.hpp` files forward to real definitions; they do not
+duplicate them. `Solver` retains buffer and RK/retry ownership while numerical
+functions live in their respective modules. CUDA POD layout, checkpoint layout,
+and internal `PYMHD_*` macros are retained. Native global symbols are not a stable
+external C++ API.
 
 ## Protocol and extension boundaries
 
-`--describe`はGPU/MPIを初期化せずcompiled capabilitiesを返します。
-`--validate-config`は同じnative parserとcross-option検査を使います。
-Engineはbackend/dtype/modelの不一致を拒否し、見つからないbinaryを自動ビルドしません。
-新しいモデルの追加時はConfig schema・preset・native closure・適用範囲のテストを同時に追加します。
-新しいbackendはregistry・build・capability検査を実装し、暗黙の代替実行はしません。
+`--describe` returns compiled capabilities without initializing MPI or a GPU.
+`--validate-config` uses the execution parser and its restrictions. The Engine
+rejects backend/model/scheme/dtype mismatches and does not build missing binaries.
 
-数値式の修正と構造整理を分けて検証します。この整理で境界角や熱回復の科学的な未検証事項が解決したとは扱いません。
+An explicitly requested model extension needs a schema, preset, native closure,
+and tests of its applicable regime. A backend needs a real build target,
+registry entry, and capability checks. Verify structural and numerical changes
+separately; moving code does not resolve boundary-angle or thermal-recovery gaps.
