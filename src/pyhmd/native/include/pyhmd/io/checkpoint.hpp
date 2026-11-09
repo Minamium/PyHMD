@@ -20,16 +20,20 @@ struct Clock {double time=0,dt=0,next_output=0,output_interval=0;std::int64_t st
 inline std::string signature(const Parameters& p) {
     // Update the algorithm tag whenever a numerical change breaks restart
     // equivalence. A checkpoint is not a claim of CPU/GPU bitwise equivalence.
-    std::ostringstream o;o<<std::setprecision(17)<<"pymhd-nv10-rk3-metric-uct-revision8-periodic-wrap\n";
+    std::ostringstream o;o<<std::setprecision(17)<<"pymhd-nv10-rk3-metric-uct-revision8-phase0\n";
     o<<PYMHD_SOURCE_FINGERPRINT<<'\n';
+    // The experimental contraction policy is part of restart compatibility.
+#ifdef PYHMD_STRICT_FP
+    o<<"fp_contract_off\n";
+#endif
     for(int v:{NV,NG,p.nx,p.ny,p.spherical,p.log_r,p.problem,p.lower1,p.upper1,p.lower2,p.upper2,
                p.cooling,p.eta_model,p.entropy_switch,p.ct_energy_correction,p.max_step_retries,p.reconstruction_cache,
                p.metric_ppm,p.initial_equilibrium,p.retry_flat_same_dt,p.negative_pressure_floor,p.internal_energy_sync,p.ct_emf_scheme,p.cfl_staggered,p.inner_flux_project,p.transport_diagnostics})o<<v<<' ';
-    o<<'\n';
+    o<<p.wave_mode<<' '<<p.noise_seed<<' '<<'\n';
     for(double v:{p.xlo,p.xhi,p.ylo,p.yhi,p.gamma,p.cfl,p.gm,p.eta,p.rho_floor,p.p_floor,p.h,p.corona,
                   p.b0,p.mu0,p.bend,p.alpha_m,p.chi,p.mu_ref,p.wave_amplitude,p.entropy_ratio,
                   p.entropy_shock_threshold,p.entropy_contact_threshold,p.dual_energy_eta})o<<v<<' ';
-    return o.str();
+    o<<p.noise_amplitude<<' ';return o.str();
 }
 inline std::string shard_name(int rank) {
     std::ostringstream o;o<<"rank"<<std::setw(6)<<std::setfill('0')<<rank<<".bin";return o.str();

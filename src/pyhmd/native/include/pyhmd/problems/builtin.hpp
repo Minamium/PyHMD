@@ -1,7 +1,9 @@
 #pragma once
 #include "pyhmd/geometry/fields.hpp"
+#include "pyhmd/problems/benchmarks.hpp"
 
 HD inline Primitive initial(double r,double th,Parameters p) {
+    if(benchmark_problem(p.problem))return benchmark_primitive(r,th,0,p);
     Primitive v; v[RHO]=1;v[ENE]=1;
     if(p.problem==ALFVEN) {v[B1]=1;v[B2]=p.wave_amplitude*sin(2*PI*r);v[B3]=p.wave_amplitude*cos(2*PI*r);v[M2]=-v[B2];v[M3]=-v[B3];}
     if(p.problem==DIFFUSION)v[B3]=p.wave_amplitude*sin(2*PI*r);
@@ -22,6 +24,7 @@ HD inline Primitive initial(double r,double th,Parameters p) {
 }
 HD inline double initial_potential(double x,double y,Parameters p) {
     if(!p.spherical) {
+        if(benchmark_problem(p.problem))return benchmark_potential(x,y,0,p);
         if(p.problem==ALFVEN)return y+p.wave_amplitude/(2*PI)*cos(2*PI*x);
         if(p.problem==BRIO_WU)return .75*y-(x<=.5?x:1.-x);
         return 0.;

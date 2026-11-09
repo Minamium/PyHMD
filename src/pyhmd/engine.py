@@ -75,6 +75,7 @@ class Engine:
         if info.get('dtype')!=self.config.dtype or info.get('model')!=self.config.model or info.get('scheme')!=self.config.scheme:
             raise ValueError('native model/scheme/dtype does not match Config')
         if self.config.grid.geometry not in info.get('geometries',[]): raise ValueError('unsupported native geometry')
+        if 'problems' in info and self.config.problem not in info['problems']: raise ValueError('problem not compiled in native binary')
         settings=self.config.native_settings();options=asdict(self.result_options);options.pop('out_dir')
         settings.update(options,output=str(output))
         if runtime.restart is not None:

@@ -21,6 +21,7 @@ jobs:
       - run: python -m pip install -e '.[test,viz]'
       - run: make test
       - run: make test-python
+      - run: make test-convergence
       - run: pyhmd run examples/thin_disk_cpu.json --out runs/ci_smoke
       - run: pyhmd validate runs/ci_smoke
       - run: pyhmd render runs/ci_smoke

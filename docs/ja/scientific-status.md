@@ -26,3 +26,5 @@ PPM/RK3という名前だけで全問題の三次収束は主張しません。
 参考：[Stepanovs & Fendt 2014](https://arxiv.org/html/1407.3136)、
 [metric PPMの幾何](https://arxiv.org/abs/1404.0537)、
 [UCTの構成](https://doi.org/10.1016/j.jcp.2020.109748)。
+
+[Phase 0の更新](phase0.md)では計測問題と周期MPIの磁束処理を整備しますが、SF2014の物理境界処方の置換や再現性の未確認事項の解決とは扱いません。

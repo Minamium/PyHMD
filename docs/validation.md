@@ -39,6 +39,7 @@ make test
 make test-python
 python3 scripts/verify_migration.py \
   --reference /path/to/frozen/pymhd_cpu \
+  --reference-configs /path/to/frozen/configs \
   --candidate build/pyhmd_cpu --target-grid \
   --report build/migration_validation.json
 ```
@@ -63,3 +64,5 @@ Skill frontmatter is also checked with the skill-creator validator when authored
 CUDA/MPI builds, GPU performance, and multi-GPU results have not been revalidated
 in this layout. CPU checks do not substitute for hardware tests. Quantitative
 SF2014 reproduction remains unverified; see [scientific status](scientific-status.md).
+
+[Phase 0](phase0.md) records the expanded migration/observer/probe/convergence checks. CUDA remains outside hosted CI; real-device acceptance is pending the authorized GPU job and independent shock-profile references.

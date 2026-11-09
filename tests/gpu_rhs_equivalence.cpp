@@ -5,7 +5,8 @@
 #include "../src/main.cpp"
 #undef main
 int main(int argc,char**argv) {
-    try{World w(argc,argv);auto p=setup_case_defaults(DISK);p.nx=argc>1?std::stoi(argv[1]):1200;p.ny=argc>2?std::stoi(argv[2]):256;
+    World w(argc,argv);
+    try{auto p=setup_case_defaults(DISK);p.nx=argc>1?std::stoi(argv[1]):1200;p.ny=argc>2?std::stoi(argv[2]):256;
         Mesh mesh(p,w);HostMesh host(mesh);Solver s(p,mesh.view,w);initialize(s,host);
         auto initial=s.u.download();auto a=s.a.download();std::vector<State>rhs;std::vector<double>emf;
         auto original_mesh=s.m;
@@ -18,10 +19,11 @@ int main(int argc,char**argv) {
             if(cache==0){rhs=r;emf=e;continue;}
             double max_error=0;
             for(int c=0;c<NV;++c){double scale=1e-30,error=0;
-                for(int j=NG;j<NG+p.ny;++j)for(int i=NG;i<NG+p.nx;++i){int id=s.m.cell(i,j);scale=std::max(scale,std::abs(rhs[id][c]));error=std::max(error,std::abs(r[id][c]-rhs[id][c]));}
+                for(int j=NG;j<NG+s.m.ny;++j)for(int i=NG;i<NG+s.m.nx;++i){int id=s.m.cell(i,j);scale=std::max(scale,std::abs(rhs[id][c]));error=std::max(error,std::abs(r[id][c]-rhs[id][c]));}
                 max_error=std::max(max_error,error/scale);}
-            double scale=1e-30,error=0;for(int j=NG;j<=NG+p.ny;++j)for(int i=NG;i<=NG+p.nx;++i){int id=s.m.vertex(i,j);scale=std::max(scale,std::abs(emf[id]));error=std::max(error,std::abs(e[id]-emf[id]));}
+            double scale=1e-30,error=0;for(int j=NG;j<=NG+s.m.ny;++j)for(int i=NG;i<=NG+s.m.nx;++i){int id=s.m.vertex(i,j);scale=std::max(scale,std::abs(emf[id]));error=std::max(error,std::abs(e[id]-emf[id]));}
             max_error=std::max(max_error,error/scale);
+            max_error=w.maximum(max_error);
             if(max_error>2e-12)throw std::runtime_error("Cached FV/CT RHS differs from reference");
             std::cout<<"PASS cached/uncached FV and UCT RHS, max component-normalized error="<<max_error<<'\n';
         }
@@ -36,5 +38,5 @@ int main(int argc,char**argv) {
             double seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
             std::cout<<"rhs_timing cache="<<cache<<" repeat="<<rep<<" milliseconds="<<seconds*1000/20<<'\n';}
         return 0;
-    }catch(const std::exception&e){std::cerr<<"FAIL RHS equivalence: "<<e.what()<<'\n';return 1;}
+    }catch(const std::exception&e){std::cerr<<"FAIL RHS equivalence: "<<e.what()<<'\n';w.abort(1);return 1;}
 }

@@ -34,6 +34,7 @@ make test
 make test-python
 python3 scripts/verify_migration.py \
   --reference /path/to/frozen/pymhd_cpu \
+  --reference-configs /path/to/frozen/configs \
   --candidate build/pyhmd_cpu --target-grid \
   --report build/migration_validation.json
 ```
@@ -65,3 +66,5 @@ python3 scripts/check_docs.py
 この確認はローカルMarkdownリンク、英日ページの存在、言語切替リンクを検査します。
 外部サイト、翻訳の正しさ、表示レイアウトまで保証するものではありません。
 skill作成時は作成環境のskill-creator validatorでfrontmatterも検証します。
+
+移行・赤道診断・probe・収束の追加検証は[Phase 0](phase0.md)を参照してください。CUDAはhosted CI外であり、許可されたGPUジョブと独立した衝撃波参照の評価が残ります。

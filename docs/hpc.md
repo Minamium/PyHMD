@@ -64,3 +64,7 @@ not universal allocation requests. Public files contain no personal connections.
 This layout has CPU validation. CUDA/MPI builds, correctness, profiling, and
 scaling need actual hardware checks. Compare GPU model, ranks, grid, accepted
 steps, physical time, retries/corrections, and output settings together.
+
+## Strict-FP experimental controls
+
+`pyhmd build --backend cuda --mpi --cuda-sm 70 --fp-mode strict` produces `pyhmd_cuda_strict`. Select it explicitly with `--binary`. The default compiler policy stays unchanged. See [Phase 0](phase0.md) for frozen-source controls and the allocated V100×4 suite.

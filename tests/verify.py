@@ -220,7 +220,9 @@ def main(argv: list[str] | None = None) -> int:
         ratio = high[1] / max(low[1], np.finfo(float).tiny)
         convergence = {"case": "alfven_refinement", "coarse_nx": low[0], "fine_nx": high[0],
                        "error_ratio": ratio, "observed_order": float(np.log(max(low[1], 1e-300) / max(high[1], 1e-300)) / np.log(high[0] / low[0])),
-                       "passed": ratio < 0.9}
+                       "minimum_observed_order": 1.5,
+                       "passed": float(np.log(max(low[1],1e-300)/max(high[1],1e-300))/np.log(high[0]/low[0])) >= 1.5,
+                       "limitation": "Aligned 1D RMS order only; multidimensional L1/Linf and face errors are measured by test-convergence."}
         report["checks"].append(convergence)
         report["passed"] = report["passed"] and convergence["passed"]
         print(f"{'PASS' if convergence['passed'] else 'FAIL'} Alfven refinement: ratio={ratio:.6g}")

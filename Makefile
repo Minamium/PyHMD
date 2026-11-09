@@ -3,11 +3,28 @@ CXXFLAGS ?= -O3 -std=c++17 -Wall -Wextra -Wpedantic
 TEST_OUTPUT ?= runs/verification
 NATIVE := src/pyhmd/native
 BUILD_DIR ?= $(CURDIR)/build
+FP_MODE ?= default
 .PHONY: all cpu cpu-mpi cuda cuda-single test test-python
+.PHONY: test-convergence test-gpu benchmark
+CONVERGENCE_OUTPUT ?= runs/convergence
+GPU_OUTPUT ?= runs/phase0_gpu
+FROZEN_SOURCE ?=
+test-convergence: cpu
+	PYTHONPATH=src python3 tests/convergence/run.py --binary build/pyhmd_cpu --output "$(CONVERGENCE_OUTPUT)"
+test-gpu:
+	@test -n "$(FROZEN_SOURCE)" || { echo 'Set FROZEN_SOURCE to an independently archived source directory with ../freeze.json'; exit 2; }
+	PYTHONPATH=src python3 tests/phase0/gpu_suite.py --output "$(GPU_OUTPUT)" --reference-source "$(FROZEN_SOURCE)"
+benchmark: cpu
+	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/cache_benchmark.cpp -o build/cache_benchmark
+	build/cache_benchmark 600 128 3
+	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/contact_mixing_diagnostic.cpp -o build/contact_mixing_diagnostic
+	build/contact_mixing_diagnostic
+	$(CXX) $(CXXFLAGS) -I$(NATIVE)/include tests/gpu_rhs_equivalence.cpp -o build/cached_rhs_cpu
+	build/cached_rhs_cpu 64 32
 all: cpu
 cpu cpu-mpi cuda cuda-single:
 	$(MAKE) -C $(NATIVE) $@ BUILD_DIR="$(abspath $(BUILD_DIR))"
-	@case "$@" in cpu) name=cpu;; cpu-mpi) name=cpu_mpi;; cuda) name=cuda;; cuda-single) name=cuda_single;; esac; ln -sf "pyhmd_$$name" "$(BUILD_DIR)/pymhd_$$name"
+	@case "$@" in cpu) name=cpu;; cpu-mpi) name=cpu_mpi;; cuda) name=cuda;; cuda-single) name=cuda_single;; esac; suffix=; if [ "$(FP_MODE)" = strict ]; then suffix=_strict; fi; ln -sf "pyhmd_$$name$$suffix" "$(BUILD_DIR)/pymhd_$$name$$suffix"
 test-python: cpu
 	PYTHONPATH=src python3 -m unittest discover -s tests/python -v
 test: cpu

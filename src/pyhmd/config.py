@@ -6,7 +6,8 @@ import math
 from pathlib import Path
 from typing import Mapping
 
-PROBLEMS = ('thin_disk', 'uniform', 'alfven', 'diffusion', 'brio_wu')
+PROBLEMS = ('thin_disk', 'uniform', 'alfven', 'diffusion', 'brio_wu',
+            'oblique_alfven', 'linear_wave', 'field_loop', 'rj2a', 'orszag_tang', 'blast_low_beta')
 
 def _problem(value):
     if not isinstance(value,str): raise ValueError('problem must be a string')
@@ -78,10 +79,13 @@ class PhysicsConfig:
     cooling: bool = True
     initial_equilibrium: str = 'magnetohydrostatic'
     wave_amplitude: float = .1
+    wave_mode: str = 'fast'
+    noise_seed: int = 0
+    noise_amplitude: float = 0.
 
     def __post_init__(self):
         for f in fields(self):
-            if f.name not in ('eta_model', 'cooling', 'initial_equilibrium', 'b0'):
+            if f.name not in ('eta_model', 'cooling', 'initial_equilibrium', 'b0', 'wave_mode'):
                 _number(getattr(self, f.name), f.name, 0)
         if self.b0 is not None: _number(self.b0, 'b0')
         if self.gamma <= 1 or not 0 < self.h < 1 or min(self.corona, self.mu_ref, self.bend) <= 0:
@@ -89,6 +93,9 @@ class PhysicsConfig:
         _choice(self.eta_model, ('constant', 'sf2014', 'strong'), 'eta_model')
         _choice(self.initial_equilibrium, ('hydrostatic', 'magnetohydrostatic'), 'initial_equilibrium')
         if not isinstance(self.cooling, bool): raise ValueError('cooling must be bool')
+        _choice(self.wave_mode, ('fast','alfven','slow','entropy'), 'wave_mode')
+        _int(self.noise_seed, 'noise_seed')
+        if self.noise_amplitude>1e-6: raise ValueError('noise_amplitude must be <= 1e-6')
 
 @dataclass(frozen=True)
 class NumericsConfig:
@@ -236,6 +243,9 @@ class Config:
         defaults, _ = preset(self.problem)
         for name, cls in GROUPS.items(): object.__setattr__(self, name, _typed(cls, getattr(self, name), defaults[name]))
         if self.problem == 'thin_disk' and self.grid.geometry != 'spherical': raise ValueError('thin_disk requires spherical geometry')
+        if self.physics.noise_amplitude and self.problem != 'thin_disk': raise ValueError('noise is supported only for thin_disk')
+        if self.physics.wave_mode != 'fast' and self.problem != 'linear_wave': raise ValueError('wave_mode applies only to linear_wave')
+        if self.problem=='linear_wave' and not 0 < self.physics.wave_amplitude <= 1e-3: raise ValueError('linear_wave requires 0 < wave_amplitude <= 1e-3')
 
     @classmethod
     def from_dict(cls, value): return _typed(cls, value)
@@ -253,6 +263,7 @@ class ResultOptions:
     checkpoint_interval: float = 0.
     checkpoint_on_retry: bool = True
     transport_diagnostics: bool = False
+    midplane_diagnostics: bool = False
 
     def __post_init__(self):
         if self.out_dir is not None and (not isinstance(self.out_dir, (str, Path)) or not str(self.out_dir)):
@@ -262,7 +273,7 @@ class ResultOptions:
             if self.output_interval <= 0: raise ValueError('output_interval must be positive')
         if self.log_interval is not None: _int(self.log_interval, 'log_interval', 1)
         _number(self.checkpoint_interval, 'checkpoint_interval', 0)
-        for key in ('checkpoint_on_retry', 'transport_diagnostics'):
+        for key in ('checkpoint_on_retry', 'transport_diagnostics', 'midplane_diagnostics'):
             if not isinstance(getattr(self, key), bool): raise ValueError(f'{key} must be bool')
 
     def resolved(self, problem):
@@ -270,7 +281,7 @@ class ResultOptions:
         return replace(self, output_interval=self.output_interval if self.output_interval is not None else float(flat.get('output_interval',10)),
                        log_interval=self.log_interval if self.log_interval is not None else int(flat.get('log_interval',100)))
 
-RESULT_KEYS = {'output', 'output_interval', 'log_interval', 'checkpoint_interval', 'checkpoint_on_retry', 'transport_diagnostics'}
+RESULT_KEYS = {'output', 'output_interval', 'log_interval', 'checkpoint_interval', 'checkpoint_on_retry', 'transport_diagnostics', 'midplane_diagnostics'}
 
 def config_from_ini(path):
     flat = read_ini(path); problem = _problem(flat.get('case', 'thin_disk'))
@@ -279,7 +290,7 @@ def config_from_ini(path):
     options = {}
     for key in RESULT_KEYS & flat.keys():
         target = 'out_dir' if key == 'output' else key
-        defaults = {'output': '', 'output_interval': 10., 'log_interval': 100, 'checkpoint_interval': 0., 'checkpoint_on_retry': True, 'transport_diagnostics': False}
+        defaults = {'output': '', 'output_interval': 10., 'log_interval': 100, 'checkpoint_interval': 0., 'checkpoint_on_retry': True, 'transport_diagnostics': False, 'midplane_diagnostics': False}
         options[target] = flat[key] if key == 'output' else _convert(key, flat[key], defaults[key])
     return cfg, ResultOptions(**options), flat.get('restart')
 

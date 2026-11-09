@@ -13,6 +13,7 @@ struct Setup {
     std::string output="runs/thin_disk",config_path,restart;
     double checkpoint_interval=0;
     int checkpoint_on_retry=1;
+    int midplane_diagnostics=0;
     int retry_streak_limit=64,retry_streak_threshold=4;
 };
 
@@ -50,6 +51,12 @@ inline int setup_case(const std::string& name) {
     if(value=="diffusion")return DIFFUSION;
     if(value=="brio_wu" || value=="brio-wu")return BRIO_WU;
     if(value=="thin_disk" || value=="disk")return DISK;
+    if(value=="oblique_alfven")return OBLIQUE_ALFVEN;
+    if(value=="linear_wave")return LINEAR_WAVE;
+    if(value=="field_loop")return FIELD_LOOP;
+    if(value=="rj2a")return RJ2A;
+    if(value=="orszag_tang")return ORSZAG_TANG;
+    if(value=="blast_low_beta")return BLAST_LOW_BETA;
     throw std::runtime_error("unknown case: "+name);
 }
 inline int setup_boundary(const std::string& name) {
@@ -92,6 +99,16 @@ inline Parameters setup_case_defaults(int problem) {
         if(problem==DIFFUSION){p.wave_amplitude=.001;p.eta=.01;}
         if(problem==BRIO_WU){p.gamma=2;p.nx=256;p.t_end=.1;p.output_interval=.025;}
     }
+    if(benchmark_problem(problem)) {
+        p.spherical=p.log_r=0;p.nx=64;p.ny=32;p.gamma=5./3;p.t_end=.1;
+        p.lower1=p.upper1=p.lower2=p.upper2=PERIODIC;p.ct_emf_scheme=1;
+        p.xlo=p.ylo=0;p.xhi=sqrt(5.);p.yhi=sqrt(5.)/2;
+        if(problem==OBLIQUE_ALFVEN){p.wave_amplitude=.1;p.t_end=1;}
+        if(problem==LINEAR_WAVE){p.wave_amplitude=1e-6;p.t_end=.5;}
+        if(problem==FIELD_LOOP){p.xlo=-1;p.xhi=1;p.ylo=-.5;p.yhi=.5;p.wave_amplitude=.001;p.t_end=1;}
+        if(problem==ORSZAG_TANG||problem==BLAST_LOW_BETA){p.xlo=p.ylo=-.5;p.xhi=p.yhi=.5;p.ny=p.nx;p.t_end=.1;}
+        if(problem==RJ2A){p.xlo=-.5;p.xhi=.5;p.ylo=0;p.yhi=.125;p.nx=128;p.ny=4;p.lower1=p.upper1=OUTFLOW;p.t_end=.2;}
+    }
     return p;
 }
 
@@ -123,10 +140,20 @@ inline std::map<std::string,std::string> setup_read_ini(const std::string& path)
 inline void setup_assign(Setup& setup,const std::string& key,const std::string& value) {
     Parameters& p=setup.p;
     if(key=="case"){p.problem=setup_case(value);return;}
+    if(key=="wave_mode") {
+        const auto mode=setup_lower(value);
+        if(mode=="fast")p.wave_mode=0;else if(mode=="alfven")p.wave_mode=1;
+        else if(mode=="slow")p.wave_mode=2;else if(mode=="entropy")p.wave_mode=3;
+        else throw std::runtime_error("unknown linear wave mode: "+value);
+        return;
+    }
+    if(key=="noise_seed"){p.noise_seed=setup_integer(value,key);return;}
+    if(key=="noise_amplitude"){p.noise_amplitude=setup_double(value,key);return;}
     if(key=="output"){setup.output=value;return;}
     if(key=="restart"){setup.restart=value;return;}
     if(key=="checkpoint_interval"){setup.checkpoint_interval=setup_double(value,key);return;}
     if(key=="checkpoint_on_retry"){setup.checkpoint_on_retry=setup_boolean(value,key);return;}
+    if(key=="midplane_diagnostics"){setup.midplane_diagnostics=setup_boolean(value,key);return;}
     if(key=="transport_diagnostics"){p.transport_diagnostics=setup_boolean(value,key);return;}
     if(key=="retry_streak_limit"){setup.retry_streak_limit=setup_integer(value,key);return;}
     if(key=="retry_streak_threshold"){setup.retry_streak_threshold=setup_integer(value,key);return;}
@@ -244,6 +271,15 @@ inline void setup_validate(const Setup& setup) {
     require(p.h>0 && p.h<1,"disk h must satisfy 0 < h < 1");
     require(p.corona>0 && p.alpha_m>=0 && p.chi>=0 && p.mu_ref>0 && p.mu0>=0 && p.bend>0,"invalid disk/corona/resistivity parameter");
     require(p.wave_amplitude>=0,"wave_amplitude must be nonnegative");
+    require(p.noise_seed>=0&&p.noise_amplitude>=0&&p.noise_amplitude<=1e-6,"invalid initial noise controls");
+    require(p.noise_amplitude==0||p.problem==DISK,"initial noise is supported only for thin_disk");
+    require(p.wave_mode==0||p.problem==LINEAR_WAVE,"wave_mode applies only to linear_wave");
+    require(p.problem!=LINEAR_WAVE||(p.wave_amplitude>0&&p.wave_amplitude<=1e-3),"linear_wave requires 0 < wave_amplitude <= 1e-3");
+    if(benchmark_problem(p.problem)) {
+        require(!p.spherical&&!p.log_r&&p.eta_model==0&&p.eta==0&&p.gm==0&&!p.cooling,"benchmarks require Cartesian uniform ideal MHD without gravity/cooling");
+        require(std::abs(p.gamma-5./3)<1e-14,"benchmarks use gamma=5/3");
+        if(p.problem!=RJ2A)require(p.lower1==PERIODIC&&p.upper1==PERIODIC&&p.lower2==PERIODIC&&p.upper2==PERIODIC,"multidimensional benchmarks require periodic boundaries");
+    }
     require(!setup.output.empty(),"output directory must not be empty");
     require(std::isfinite(setup.checkpoint_interval)&&setup.checkpoint_interval>=0,"checkpoint_interval must be finite and nonnegative");
     require(!p.transport_diagnostics||p.ct_emf_scheme==1,"transport_diagnostics requires face_hll CT");
@@ -265,6 +301,7 @@ inline void setup_validate(const Setup& setup) {
         require(p.lower2!=AXIS && p.upper2!=AXIS && p.lower2!=EQUATOR && p.upper2!=EQUATOR,"axis/equator boundaries require spherical geometry");
     }
     require(p.problem!=DISK || p.spherical,"thin_disk requires spherical geometry");
+    require(!setup.midplane_diagnostics||(p.problem==DISK&&p.spherical&&p.upper2==EQUATOR&&p.xlo<1.5&&p.xhi>1.1),"midplane diagnostics require an equatorial disk intersecting r=[1.1,1.5]");
     require(p.initial_equilibrium==0||p.initial_equilibrium==1,"invalid initial equilibrium");
     require(p.eta_model==0 || (p.problem==DISK && p.spherical && p.upper2==EQUATOR && std::abs(p.yhi-PI/2)<1e-13),"SF2014 resistivity requires the upper-hemisphere thin_disk case with equatorial upper boundary");
     require(p.lower2!=EQUATOR && p.upper2!=AXIS,"lower-equator and upper-axis orientations are not implemented");
@@ -284,6 +321,7 @@ inline Setup parse_setup(int argc,char** argv) {
         {"--cfl-staggered","cfl_staggered"},
         {"--inner-normal-field","inner_normal_field"},
         {"--transport-diagnostics","transport_diagnostics"},
+        {"--midplane-diagnostics","midplane_diagnostics"},
         {"--output-interval","output_interval"},{"--log-interval","log_interval"},
         {"--restart","restart"},{"--checkpoint-interval","checkpoint_interval"},{"--checkpoint-on-retry","checkpoint_on_retry"},
         {"--retry-streak-limit","retry_streak_limit"},{"--retry-streak-threshold","retry_streak_threshold"}};
@@ -306,6 +344,7 @@ inline Setup parse_setup(int argc,char** argv) {
                      <<"       [--restart CHECKPOINT_DIR] [--checkpoint-interval T] [--checkpoint-on-retry yes|no]\n"
                      <<"       [--retry-streak-limit N] [--retry-streak-threshold N]\n"
                      <<"Cases: thin_disk, uniform, alfven, diffusion, brio_wu\n"
+                     <<"       oblique_alfven, linear_wave, field_loop, rj2a, orszag_tang, blast_low_beta\n"
                      <<"Precedence: case defaults, then INI keys, then explicit CLI values.\n"
                      <<"INI sections are cosmetic; keys are globally unique and unknown keys fail.\n";
             std::exit(0);

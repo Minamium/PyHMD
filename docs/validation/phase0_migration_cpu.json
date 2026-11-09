@@ -1,0 +1,190 @@
+{
+  "schema_version": 2,
+  "passed": true,
+  "rank_count": 1,
+  "scope": "same-platform/backend migration, not scientific validation",
+  "binary_sha256": {
+    "reference": "f73ad8fcad85d15ffef0af9bb33f5e0cb86aab9a0b204459d2f2740c1d01a722",
+    "candidate": "c37d52fd013ac93fc8db0cc4d459abf62dee2539712694ff3b09485bac68b152"
+  },
+  "config_sha256": {
+    "uniform.ini": "1c7f7430a789d50385fbdfc56ab374d8ed2c2a2a3365b63a4f5b99047068e890",
+    "brio_wu.ini": "0d0c69523eca103f455991af4455389a25492d37d9f0f954a2fce049a43209a2",
+    "thin_disk_strong.ini": "8b7e8892428e1c4f645ad7c6a4540c98defcbfcf971b1268b3ab5bab4512b9b1",
+    "alfven.ini": "8f67813459ef1103ada657baff63d1eb8d3c87bf6abca2595c79de412fcceac2",
+    "diffusion.ini": "fea6df154fc4896571b53d03d7570539f97e31e849501b78afecf39c8f5dd3b4",
+    "thin_disk.ini": "57c3be627e6573c39ae7f6c46fcf750fda060179e8cfbbc219563889fefd8cfb"
+  },
+  "compared": [
+    "all U/Psi incl. ghosts",
+    "all correction and flux ledgers",
+    "transport sidecars",
+    "clock",
+    "trial counters",
+    "snapshots",
+    "diagnostics except wall_seconds"
+  ],
+  "cases": [
+    {
+      "case": "uniform",
+      "grid": [
+        32,
+        16
+      ],
+      "settings": {
+        "nx1": 32,
+        "nx2": 16,
+        "t-end": 0.05,
+        "output-interval": 0.025,
+        "checkpoint-interval": 0.025,
+        "log-interval": 10
+      },
+      "differences": [],
+      "passed": true,
+      "step": 8
+    },
+    {
+      "case": "alfven",
+      "grid": [
+        64,
+        4
+      ],
+      "settings": {
+        "nx1": 64,
+        "nx2": 4,
+        "t-end": 0.1,
+        "output-interval": 0.05,
+        "checkpoint-interval": 0.05,
+        "log-interval": 10
+      },
+      "differences": [],
+      "passed": true,
+      "step": 36
+    },
+    {
+      "case": "diffusion",
+      "grid": [
+        64,
+        4
+      ],
+      "settings": {
+        "nx1": 64,
+        "nx2": 4,
+        "t-end": 0.05,
+        "output-interval": 0.025,
+        "checkpoint-interval": 0.025,
+        "log-interval": 10
+      },
+      "differences": [],
+      "passed": true,
+      "step": 30
+    },
+    {
+      "case": "brio_wu",
+      "grid": [
+        64,
+        4
+      ],
+      "settings": {
+        "nx1": 64,
+        "nx2": 4,
+        "t-end": 0.03,
+        "output-interval": 0.015,
+        "checkpoint-interval": 0.015,
+        "log-interval": 10
+      },
+      "differences": [],
+      "passed": true,
+      "step": 28
+    },
+    {
+      "case": "thin_disk",
+      "grid": [
+        64,
+        32
+      ],
+      "settings": {
+        "nx1": 64,
+        "nx2": 32,
+        "t-end": 0.1,
+        "output-interval": 0.05,
+        "checkpoint-interval": 0.05,
+        "log-interval": 10
+      },
+      "differences": [],
+      "passed": true,
+      "step": 10,
+      "reference_restart_differences": [],
+      "candidate_restart_differences": [],
+      "resumed_cross_binary_differences": []
+    },
+    {
+      "case": "alfven",
+      "grid": [
+        64,
+        4
+      ],
+      "settings": {
+        "nx1": 64,
+        "nx2": 4,
+        "t-end": 0.1,
+        "output-interval": 0.05,
+        "checkpoint-interval": 0.05,
+        "log-interval": 10,
+        "ct-emf-scheme": "face_hll"
+      },
+      "differences": [],
+      "passed": true,
+      "step": 36
+    },
+    {
+      "case": "thin_disk",
+      "grid": [
+        64,
+        32
+      ],
+      "settings": {
+        "nx1": 64,
+        "nx2": 32,
+        "t-end": 0.1,
+        "output-interval": 0.05,
+        "checkpoint-interval": 0.05,
+        "log-interval": 10,
+        "transport-diagnostics": "yes"
+      },
+      "differences": [],
+      "passed": true,
+      "step": 10,
+      "reference_restart_differences": [],
+      "candidate_restart_differences": [],
+      "resumed_cross_binary_differences": []
+    },
+    {
+      "case": "thin_disk",
+      "grid": [
+        600,
+        128
+      ],
+      "settings": {
+        "nx1": 600,
+        "nx2": 128,
+        "t-end": 100,
+        "output-interval": 50.0,
+        "checkpoint-interval": 50.0,
+        "log-interval": 10,
+        "max-steps": 100,
+        "transport-diagnostics": "yes"
+      },
+      "differences": [],
+      "passed": true,
+      "step": 100
+    }
+  ],
+  "forced_retry_exercised": true,
+  "forced_retry_differences": [],
+  "migration_retry_coverage_complete": true,
+  "candidate_source_fingerprint": "20edde3d717f4907c8f03113d36065c3e4117c1c504028ff075008ef3fd268b2",
+  "reference_commit": "671fdf66b9445858e4e411928bddeaa2e294ffc6",
+  "hardware_validation": "CPU only; CUDA/MPI checks are prepared for a separate allocated V100 job",
+  "phase0_gate_complete": false
+}

@@ -33,3 +33,5 @@ the physical solution. `completed` and validator success do not certify SF2014 r
 References: [Stepanovs & Fendt 2014](https://arxiv.org/html/1407.3136),
 [metric PPM geometry](https://arxiv.org/abs/1404.0537),
 [UCT construction](https://doi.org/10.1016/j.jcp.2020.109748).
+
+The [Phase 0 update](phase0.md) adds measurement problems and corrects wrapped periodic MPI flux handling. It does not replace the SF2014 physical boundary prescription or resolve its scientific reproduction gaps.

@@ -60,3 +60,7 @@ Transport diagnostics have native restrictions, including the spherical/log
 disk, `face_hll`, and `evolve` choices. Select recording before the run: missing
 ledgers cannot be reconstructed as measured face-flux data. Keep output intervals
 fixed in trajectory/performance comparisons because they clip time steps.
+
+## Phase 0 measurement controls
+
+See [Phase 0](phase0.md) for additional benchmark problems, `wave_mode`, disk-only `noise_amplitude`/`noise_seed`, and `ResultOptions.midplane_diagnostics`. The latter records raw-pressure midplane statistics at existing output/log samples and does not clip additional time steps.

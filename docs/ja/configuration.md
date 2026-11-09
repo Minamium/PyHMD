@@ -55,3 +55,7 @@ model=`resistive_mhd`、scheme=`ppm_hll_ssprk3`、dtype=`float64`のみを登録
 設定の定義と選択肢は[config.py](../../src/pyhmd/config.py)を参照してください。
 輸送台帳などの保存は実行前に選びます。保存していない面流束を、後から実測の輸送診断として復元することはできません。
 出力間隔はdtを切り詰めて数値軌道を変えるため、計算結果や性能の比較では固定します。
+
+## Phase 0の計測設定
+
+追加試験問題、`wave_mode`、円盤限定の`noise_amplitude`/`noise_seed`、`ResultOptions.midplane_diagnostics`は[Phase 0](phase0.md)を参照してください。赤道診断は既存の出力/ログ時刻にraw pressureの統計を保存し、追加のdt切詰めを行いません。

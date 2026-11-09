@@ -21,7 +21,13 @@ inline void describe() {
 #else
              <<"false"
 #endif
-             <<"}\n";
+             <<",\"fp_mode\":\""
+#ifdef PYHMD_STRICT_FP
+             <<"strict"
+#else
+             <<"default"
+#endif
+             <<"\",\"problems\":[\"thin_disk\",\"uniform\",\"alfven\",\"diffusion\",\"brio_wu\",\"oblique_alfven\",\"linear_wave\",\"field_loop\",\"rj2a\",\"orszag_tang\",\"blast_low_beta\"],\"wave_modes\":[\"fast\",\"alfven\",\"slow\",\"entropy\"]}\n";
 }
 inline int validate_configuration(int argc,char** argv) {
     try {

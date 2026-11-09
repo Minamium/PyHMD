@@ -23,3 +23,5 @@ API名、設定キー、機械可読ファイルの識別子は英語のまま�
 英語は`README.md`と`docs/*.md`、日本語は`README.ja.md`と`docs/ja/*.md`で管理します。
 挙動・コマンド例・制限事項を変えるときは両版を更新し、相互リンクを付けます。
 確認コマンドは`python3 scripts/check_docs.py`です。
+
+- [Phase 0：計測・検証基盤](phase0.md)（[English](../phase0.md)）：計画の検証、probe、凍結対照と未完了事項。

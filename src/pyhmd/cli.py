@@ -21,6 +21,7 @@ def main(argv=None):
         p.add_argument('--ranks',type=int);p.add_argument('--binary',type=Path);p.add_argument('--build-dir',type=Path)
     p=commands.add_parser('build');p.add_argument('--backend',choices=('cpu','cuda'),default='cpu')
     p.add_argument('--mpi',action='store_true');p.add_argument('--build-dir',type=Path);p.add_argument('--cuda-sm',default='70');p.add_argument('--jobs',type=int,default=1)
+    p.add_argument('--fp-mode',choices=('default','strict'),default='default')
     p=commands.add_parser('init');p.add_argument('--problem',default='thin_disk');p.add_argument('--output',type=Path,required=True)
     p=commands.add_parser('inspect');p.add_argument('result',type=Path)
     p=commands.add_parser('validate');p.add_argument('result',type=Path);p.add_argument('--expect-time',type=float)
@@ -37,7 +38,7 @@ def main(argv=None):
             result=engine.run();_print(dict(out_dir=result.out_dir,status=result.status,complete=result.complete))
             return {'completed':0,'incomplete':3,'stopped':4}.get(result.status,2)
         if args.command=='build':
-            artifact=build_native(args.backend,mpi=args.mpi,build_dir=args.build_dir,cuda_sm=args.cuda_sm,jobs=args.jobs)
+            artifact=build_native(args.backend,mpi=args.mpi,build_dir=args.build_dir,cuda_sm=args.cuda_sm,jobs=args.jobs,fp_mode=args.fp_mode)
             _print(artifact);return 0
         if args.command=='init':
             from dataclasses import replace

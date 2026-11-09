@@ -1,0 +1,903 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "profile": "default",
+  "ct_scheme": "face_hll",
+  "grid": [
+    16,
+    8
+  ],
+  "t_end": 0.01,
+  "density_perturbation": 1e-13,
+  "source": {
+    "protocol_version": 1,
+    "application": "PyHMD",
+    "dtype": "float64",
+    "dimensions": 2,
+    "model": "resistive_mhd",
+    "scheme": "ppm_hll_ssprk3",
+    "geometries": [
+      "cartesian",
+      "spherical"
+    ],
+    "source_fingerprint": "20edde3d717f4907c8f03113d36065c3e4117c1c504028ff075008ef3fd268b2",
+    "backend": "cpu",
+    "mpi": false,
+    "fp_mode": "default",
+    "problems": [
+      "thin_disk",
+      "uniform",
+      "alfven",
+      "diffusion",
+      "brio_wu",
+      "oblique_alfven",
+      "linear_wave",
+      "field_loop",
+      "rj2a",
+      "orszag_tang",
+      "blast_low_beta"
+    ],
+    "wave_modes": [
+      "fast",
+      "alfven",
+      "slow",
+      "entropy"
+    ]
+  },
+  "binary_sha256": "c37d52fd013ac93fc8db0cc4d459abf62dee2539712694ff3b09485bac68b152",
+  "members": [
+    {
+      "seed": 0,
+      "amplitude": 0,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082582
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291698033e-07,
+          "ct_boundary_energy": -1.389890100770531e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459150993e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.76044007636,
+        "boundary_mass_out": 3.1644904974510955e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 1,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082602
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291698086e-07,
+          "ct_boundary_energy": -1.389890100770531e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459151027e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076372,
+        "boundary_mass_out": 3.1644904974510617e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 2,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082438
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169768e-07,
+          "ct_boundary_energy": -1.3806748885255853e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459150694e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588783,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076022,
+        "boundary_mass_out": 3.1644904974510998e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 3,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082521
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291697197e-07,
+          "ct_boundary_energy": -1.3895656232045197e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459150434e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076299,
+        "boundary_mass_out": 3.1644904974506208e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 4,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082651
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169826e-07,
+          "ct_boundary_energy": -1.4554901969678002e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459151584e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588655,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.7604400764185,
+        "boundary_mass_out": 3.1644904974511976e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 5,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082783
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829170152e-07,
+          "ct_boundary_energy": -1.3327107339364086e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459152943e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076712,
+        "boundary_mass_out": 3.164490497451121e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 6,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 5.823789836904723e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.7061998440825485
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169955e-07,
+          "ct_boundary_energy": -1.3766957049101605e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.800255045915192e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588783,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076195,
+        "boundary_mass_out": 3.164490497451111e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 7,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.7061998440826995
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829170152e-07,
+          "ct_boundary_energy": -1.389890100770531e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459153324e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.76044007662,
+        "boundary_mass_out": 3.1644904974511506e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 8,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082512
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169796e-07,
+          "ct_boundary_energy": -1.3669297390791645e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.800255045915079e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588783,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076183,
+        "boundary_mass_out": 3.1644904974507123e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 9,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082419
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291695487e-07,
+          "ct_boundary_energy": -1.4007280239254893e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459149364e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458852,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076148,
+        "boundary_mass_out": 3.1644904974511133e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 10,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082618
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169779e-07,
+          "ct_boundary_energy": -1.3824321520842934e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459150779e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.76044007627,
+        "boundary_mass_out": 3.164490497451115e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 11,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 5.823789836904723e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.7061998440826756
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291697975e-07,
+          "ct_boundary_energy": -1.3163203562261707e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459150461e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458852,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076646,
+        "boundary_mass_out": 3.1644904974511125e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 12,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082542
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169777e-07,
+          "ct_boundary_energy": -1.3895656232045197e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459150815e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588655,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076341,
+        "boundary_mass_out": 3.164490497450782e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 13,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082502
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291704095e-07,
+          "ct_boundary_energy": -1.3895656232045197e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459155046e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588783,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.7604400762075,
+        "boundary_mass_out": 3.1644904974509935e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 14,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082468
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.692371829169604e-07,
+          "ct_boundary_energy": -1.4064644710996222e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.800255045914977e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.019549022964588783,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.7604400762675,
+        "boundary_mass_out": 3.1644904974510837e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 15,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082627
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291699876e-07,
+          "ct_boundary_energy": -1.35354707110187e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.8002550459151984e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458852,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.760440076301,
+        "boundary_mass_out": 3.1644904974511684e-06
+      },
+      "native_sample_count": 2
+    },
+    {
+      "seed": 16,
+      "amplitude": 1e-13,
+      "returncode": 0,
+      "valid": true,
+      "status": "completed",
+      "integrity": {
+        "time": 0.01,
+        "steps": 1,
+        "floors": 0.0,
+        "max_divB": 4.144951273749959e-18,
+        "snapshot": "snapshot_000001.csv",
+        "cells": 128,
+        "validation_scope": "numerical_integrity_only",
+        "scientific_reproduction_verified": false,
+        "max_sampled_dual_unreliable_shock_cells": 0.0,
+        "initial_energy_integrals": {
+          "thermal": 0.14955502195538167,
+          "magnetic": 0.0200902829243662,
+          "kinetic": 4.706199844082557
+        },
+        "interval_energy_corrections": {
+          "ct_energy": -2.6923718291698457e-07,
+          "ct_boundary_energy": -1.3918047967149379e-19,
+          "internal_energy": 0.0,
+          "entropy_energy": 0.0,
+          "floor_energy": 0.0
+        },
+        "sum_abs_global_corrections_over_initial_thermal": 1.800255045915129e-06,
+        "correction_screening_threshold": 0.1,
+        "warnings": []
+      },
+      "final": {
+        "time": 0.01,
+        "mu": 0.01954902296458905,
+        "delta_psi": 0.005326756569804723,
+        "mass": 5251.76044007648,
+        "boundary_mass_out": 3.1644904974506542e-06
+      },
+      "native_sample_count": 2
+    }
+  ],
+  "scientific_reproduction_verified": false,
+  "noise_floor_qualified": true,
+  "method": "Uniform [-1,1] deterministic global-index density perturbation at fixed initial pressure; conditional on grid/scheme/FP profile",
+  "pressure_convention": "raw total-energy pressure",
+  "band": [
+    1.1,
+    1.5
+  ],
+  "normalization": "one simulated hemisphere, per radian azimuth",
+  "final_time_quantiles_measured": {
+    "mu": {
+      "mean": 0.019549022964588818,
+      "std": 2.0824390166609742e-16,
+      "quantiles": {
+        "0.0": 0.01954902296458852,
+        "0.05": 0.01954902296458852,
+        "0.5": 0.019549022964588783,
+        "0.95": 0.01954902296458905,
+        "1.0": 0.01954902296458905
+      },
+      "unperturbed": 0.01954902296458905
+    },
+    "delta_psi": {
+      "mean": 0.005326756569804723,
+      "std": 0.0,
+      "quantiles": {
+        "0.0": 0.005326756569804723,
+        "0.05": 0.005326756569804723,
+        "0.5": 0.005326756569804723,
+        "0.95": 0.005326756569804723,
+        "1.0": 0.005326756569804723
+      },
+      "unperturbed": 0.005326756569804723
+    },
+    "mass": {
+      "mean": 5251.760440076342,
+      "std": 1.9183454698579663e-10,
+      "quantiles": {
+        "0.0": 5251.760440076022,
+        "0.05": 5251.7604400761165,
+        "0.5": 5251.7604400763,
+        "0.95": 5251.760440076662,
+        "1.0": 5251.760440076712
+      },
+      "unperturbed": 5251.76044007636
+    },
+    "boundary_mass_out": {
+      "mean": 3.1644904974510057e-06,
+      "std": 1.9487333289255885e-19,
+      "quantiles": {
+        "0.0": 3.1644904974506208e-06,
+        "0.05": 3.1644904974506458e-06,
+        "0.5": 3.1644904974511057e-06,
+        "0.95": 3.1644904974511756e-06,
+        "1.0": 3.1644904974511976e-06
+      },
+      "unperturbed": 3.1644904974510955e-06
+    }
+  },
+  "time_grid": [
+    0.0,
+    0.01
+  ],
+  "time_quantiles_interpolated": {
+    "mu": {
+      "0.0": [
+        0.019200338700992473,
+        0.01954902296458852
+      ],
+      "0.05": [
+        0.019200338700992473,
+        0.01954902296458852
+      ],
+      "0.5": [
+        0.019200338700992605,
+        0.019549022964588783
+      ],
+      "0.95": [
+        0.01920033870099286,
+        0.01954902296458905
+      ],
+      "1.0": [
+        0.01920033870099286,
+        0.01954902296458905
+      ]
+    },
+    "delta_psi": {
+      "0.0": [
+        0.005322458506179299,
+        0.005326756569804723
+      ],
+      "0.05": [
+        0.005322458506179299,
+        0.005326756569804723
+      ],
+      "0.5": [
+        0.005322458506179299,
+        0.005326756569804723
+      ],
+      "0.95": [
+        0.005322458506179299,
+        0.005326756569804723
+      ],
+      "1.0": [
+        0.005322458506179299,
+        0.005326756569804723
+      ]
+    },
+    "mass": {
+      "0.0": [
+        5251.760443240512,
+        5251.760440076022
+      ],
+      "0.05": [
+        5251.760443240607,
+        5251.7604400761165
+      ],
+      "0.5": [
+        5251.760443240791,
+        5251.7604400763
+      ],
+      "0.95": [
+        5251.760443241152,
+        5251.760440076662
+      ],
+      "1.0": [
+        5251.760443241202,
+        5251.760440076712
+      ]
+    },
+    "boundary_mass_out": {
+      "0.0": [
+        0.0,
+        3.1644904974506208e-06
+      ],
+      "0.05": [
+        0.0,
+        3.1644904974506458e-06
+      ],
+      "0.5": [
+        0.0,
+        3.1644904974511057e-06
+      ],
+      "0.95": [
+        0.0,
+        3.1644904974511756e-06
+      ],
+      "1.0": [
+        0.0,
+        3.1644904974511976e-06
+      ]
+    }
+  },
+  "interpolation_note": "Only final t_end values are sampled at identical physical time. Interior time-grid quantiles use linear interpolation of accepted-step samples; they are not direct measurements.",
+  "scope": "Harness smoke only: grid 16x8, t=0.01; not the planned production-grid noise floor",
+  "phase0_gate_complete": false
+}

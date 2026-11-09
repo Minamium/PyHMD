@@ -28,3 +28,5 @@ Use `README.md` and `docs/*.md` for English; use `README.ja.md` and
 `docs/ja/*.md` for Japanese. Update behavior, examples, and limitations in both
 versions together. Link counterpart pages and keep command/configuration names
 identical. Run `python3 scripts/check_docs.py` before committing documentation.
+
+- [Phase 0: measurement and verification](phase0.md) ([日本語](ja/phase0.md)): roadmap review, new probes, frozen controls, and pending gates.

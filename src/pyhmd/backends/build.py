@@ -37,10 +37,11 @@ class BuildArtifact:
     description: dict
     manifest: Path
 
-def build_native(backend='cpu', *, mpi=False, build_dir=None, cuda_sm='70', jobs=1):
+def build_native(backend='cpu', *, mpi=False, build_dir=None, cuda_sm='70', jobs=1, fp_mode='default'):
     target = get_backend(backend,mpi)
     if isinstance(jobs,bool) or not isinstance(jobs,int) or jobs < 1: raise ValueError('jobs must be positive integer')
     if not str(cuda_sm).isdigit(): raise ValueError('cuda_sm must contain digits such as 70 or 90')
+    if fp_mode not in ('default','strict'): raise ValueError('fp_mode must be default or strict')
     directory = Path(build_dir).expanduser().resolve() if build_dir is not None else default_build_dir()
     directory.mkdir(parents=True,exist_ok=True)
     lock = directory/'.build.lock'
@@ -48,16 +49,17 @@ def build_native(backend='cpu', *, mpi=False, build_dir=None, cuda_sm='70', jobs
     except FileExistsError as e: raise RuntimeError(f'build is already locked: {lock}; inspect its owning process') from e
     try:
         with os.fdopen(fd,'w') as f: f.write(str(os.getpid())+'\n')
-        command = ['make','-B','-C',str(NATIVE),f'-j{jobs}',target.make_target,f'BUILD_DIR={directory}',f'CUDA_SM={cuda_sm}']
-        log = directory/(target.executable+'.build.log')
+        executable=target.executable+('_strict' if fp_mode=='strict' else '')
+        command = ['make','-B','-C',str(NATIVE),f'-j{jobs}',target.make_target,f'BUILD_DIR={directory}',f'CUDA_SM={cuda_sm}',f'FP_MODE={fp_mode}']
+        log = directory/(executable+'.build.log')
         with log.open('w') as stream: process = subprocess.run(command,stdout=stream,stderr=subprocess.STDOUT)
         if process.returncode: raise RuntimeError(f'native build failed ({process.returncode}); see {log}')
-        binary = directory/target.executable; info = describe(binary)
+        binary = directory/executable; info = describe(binary)
         fingerprint = source_fingerprint(NATIVE)
         if info['source_fingerprint'] != fingerprint: raise RuntimeError('built source fingerprint differs')
-        manifest = directory/(target.executable+'.build.json')
+        manifest = directory/(executable+'.build.json')
         q = dict(binary=str(binary),binary_sha256=sha256(binary),source_fingerprint=fingerprint,
-                 description=info,command=command,cuda_sm=str(cuda_sm) if backend=='cuda' else None,
+                 description=info,command=command,fp_mode=fp_mode,cuda_sm=str(cuda_sm) if backend=='cuda' else None,
                  toolchain={name:os.environ.get(name) for name in ('CXX','NVCC','MPICXX','CXXFLAGS','CUDAFLAGS')},log=str(log))
         manifest.write_text(json.dumps(q,indent=2)+'\n')
         return BuildArtifact(binary,q['binary_sha256'],fingerprint,info,manifest)

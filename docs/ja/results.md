@@ -45,3 +45,5 @@ Engineの`run`は同期実行で、nativeの標準出力・標準エラーは`ru
 legacy結果の検証では期待時刻を明示します。例：`pyhmd validate runs/legacy --expect-time 1`。
 Python CLIには`--restart`オプションがないため、Pythonの`RuntimeConfig.restart`またはINIの`restart`を使います。
 [READMEの再開例](../../README.ja.md)も参照してください。
+
+`midplane_metrics.csv`は受理出力で保存する任意の受動診断です。schema別の読取専用checkpoint検査と初期状態probe専用形式は[Phase 0](phase0.md)を参照してください。probe形式は通常の再開機構ではありません。

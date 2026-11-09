@@ -7,7 +7,7 @@
 constexpr int NV=10, NG=3;
 constexpr double PI=3.14159265358979323846;
 enum {RHO, M1, M2, M3, ENE, B1, B2, B3, ENTR, EINT};
-enum Case {UNIFORM, ALFVEN, DIFFUSION, BRIO_WU, DISK};
+enum Case {UNIFORM, ALFVEN, DIFFUSION, BRIO_WU, DISK, OBLIQUE_ALFVEN, LINEAR_WAVE, FIELD_LOOP, RJ2A, ORSZAG_TANG, BLAST_LOW_BETA};
 enum Boundary {OUTFLOW, PERIODIC, REFLECT, AXIS, EQUATOR, PAPER_INNER, PAPER_OUTER};
 struct State { double q[NV]{}; HD double& operator[](int i){return q[i];} HD double operator[](int i)const{return q[i];} };
 struct Primitive { double q[NV]{}; HD double& operator[](int i){return q[i];} HD double operator[](int i)const{return q[i];} };
@@ -52,6 +52,8 @@ struct Parameters {
     double b0=.01414213562373095,mu0=.01,bend=.5,alpha_m=1.65,chi=.5,mu_ref=.01;
     double wave_amplitude=.1,glm_dummy=0;
     int max_steps=100000000,log_interval=100;
+    int wave_mode=0,noise_seed=0; // fast, Alfven, slow, entropy; global-index seed.
+    double noise_amplitude=0; // Initial density perturbation, disabled by default.
     const Midplane* midplane=nullptr;
     const Primitive *primitive_cache=nullptr,*edge_xl=nullptr,*edge_xr=nullptr,*edge_yl=nullptr,*edge_yr=nullptr;
     const int* shock_flags=nullptr;

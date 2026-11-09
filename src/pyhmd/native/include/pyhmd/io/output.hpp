@@ -3,6 +3,7 @@
 #include "pyhmd/problems/initialize.hpp"
 #include "pyhmd/io/checkpoint.hpp"
 #include "pyhmd/diagnostics/transport.hpp"
+#include "pyhmd/diagnostics/midplane.hpp"
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -11,13 +12,14 @@
 #include <sstream>
 
 namespace fs=std::filesystem;
-static std::string case_name(int c) {return c==DISK?"thin_disk":c==UNIFORM?"uniform":c==ALFVEN?"alfven":c==DIFFUSION?"diffusion":"brio_wu";}
+static std::string case_name(int c) {switch(c){case DISK:return "thin_disk";case UNIFORM:return "uniform";case ALFVEN:return "alfven";case DIFFUSION:return "diffusion";case BRIO_WU:return "brio_wu";case OBLIQUE_ALFVEN:return "oblique_alfven";case LINEAR_WAVE:return "linear_wave";case FIELD_LOOP:return "field_loop";case RJ2A:return "rj2a";case ORSZAG_TANG:return "orszag_tang";case BLAST_LOW_BETA:return "blast_low_beta";default:throw std::runtime_error("unknown case id");}}
 static void json_array(std::ostream& o,const std::vector<double>& a) {
     o<<'[';for(size_t i=0;i<a.size();++i){if(i)o<<',';o<<std::setprecision(17)<<a[i];}o<<']';
 }
 class Output {
     const Setup& setup;const World& w;const Mesh& mesh;const HostMesh& host;
     std::ofstream diagnostics;int sequence=0;
+    std::ofstream midplane_metrics;
     Buffer<State> sensor_state;Buffer<double> sensor_potential;
     std::unique_ptr<TransportOutput> transport_output;
     bool have_budget_origin=false;
@@ -31,12 +33,18 @@ public:
         }
         if(setup.p.transport_diagnostics)transport_output=std::make_unique<TransportOutput>(setup.output,w,host.view,setup.p);
         if(w.rank)return;
+        if(setup.midplane_diagnostics) {
+            midplane_metrics.open(fs::path(setup.output)/"midplane_metrics.csv");
+            midplane_metrics<<"step,time,mu_r1p1_r1p5,Btheta_squared_mean,raw_pressure_mean,radial_width,delta_psi_r1p1_r1p5\n";
+        }
         const auto& p=setup.p;std::ofstream meta(fs::path(setup.output)/"metadata.json");meta<<std::setprecision(17);
         meta<<"{\n\"format_version\":2,\n\"geometry\":\""<<(p.spherical?"spherical":"cartesian")<<"\",\n\"case\":\""<<case_name(p.problem)<<"\",\n\"nx1\":"<<p.nx<<",\"nx2\":"<<p.ny<<",\"gamma\":"<<p.gamma<<",\n";
         meta<<"\"checkpoint_version\":"<<pymhd_checkpoint::version<<",\"restarted\":"<<(setup.restart.empty()?"false":"true")
             <<",\"checkpoint_interval\":"<<setup.checkpoint_interval<<",\"retry_streak_limit\":"<<setup.retry_streak_limit
             <<",\"retry_streak_threshold\":"<<setup.retry_streak_threshold<<",\n";
         meta<<"\"source_fingerprint\":\""<<PYMHD_SOURCE_FINGERPRINT<<"\",\n";
+        meta<<"\"wave_mode\":"<<p.wave_mode<<",\"noise_seed\":"<<p.noise_seed<<",\"noise_amplitude\":"<<p.noise_amplitude<<",\n";
+        meta<<"\"midplane_diagnostics\":"<<setup.midplane_diagnostics<<",\"midplane_pressure\":\"raw total-energy pressure\",\n";
         meta<<"\"eta\":"<<p.eta<<",\"eta_model\":"<<p.eta_model<<",\"wave_amplitude\":"<<p.wave_amplitude<<",\"cfl\":"<<p.cfl<<",\n";
         meta<<"\"entropy_switch\":"<<p.entropy_switch<<",\"entropy_ratio\":"<<p.entropy_ratio<<",\"entropy_shock_threshold\":"<<p.entropy_shock_threshold<<",\"ct_energy_correction\":"<<p.ct_energy_correction<<",\"max_step_retries\":"<<p.max_step_retries<<",\"reconstruction_cache\":"<<p.reconstruction_cache<<",\n";
         meta<<"\"entropy_contact_threshold\":"<<p.entropy_contact_threshold<<",\n";
@@ -84,6 +92,7 @@ public:
         auto mid=p.eta_model?s.mid_global.download():std::vector<Midplane>{};Parameters output_params=p;
         output_params.midplane=mid.empty()?nullptr:mid.data();output_params.primitive_cache=nullptr;
         if(transport_output)transport_output->write(s,states,aa,sensor_states,step,time,snapshot);
+        if(setup.midplane_diagnostics)write_midplane_sample(midplane_metrics,w,states,aa,m,p,step,time);
         const int nf=18;std::vector<double> local(static_cast<size_t>(m.nx)*m.ny*nf);double sums[8]={0,0,1e300,1e300,0,0,0,0};double bad=0,unreliable_shocks=0;
         for(int j=0;j<m.ny;++j)for(int i=0;i<m.nx;++i) {
             int ii=i+NG,jj=j+NG;State u=states[m.cell(ii,jj)];Primitive v=primitive(u,m.radius(ii,jj,p),p);

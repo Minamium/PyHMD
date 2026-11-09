@@ -1,0 +1,48 @@
+{
+  "same_initial_bits": true,
+  "physics_settings_match": true,
+  "tolerance": 1e-12,
+  "stencil_scale": 29.33655127422003,
+  "fields": {
+    "rhs": {
+      "max_abs": 0.0,
+      "scaled": 0.0,
+      "bits_equal": true
+    },
+    "emf": {
+      "max_abs": 0.0,
+      "scaled": 0.0,
+      "bits_equal": true
+    },
+    "final_U": {
+      "max_abs": 0.0,
+      "scaled": 0.0,
+      "bits_equal": true
+    },
+    "final_Psi": {
+      "max_abs": 0.0,
+      "scaled": 0.0,
+      "bits_equal": true
+    }
+  },
+  "same_final_clock": true,
+  "final_clock_abs_difference": 0.0,
+  "integration_timing": {
+    "left": {
+      "ranks": 1,
+      "max_rank_wall_seconds": 0.440627333,
+      "accepted_steps": 100,
+      "physical_time": 0.7930363319676085
+    },
+    "right": {
+      "ranks": 1,
+      "max_rank_wall_seconds": 0.416452917,
+      "accepted_steps": 100,
+      "physical_time": 0.7930363319676085
+    }
+  },
+  "passed_rhs": true,
+  "trajectory_within_initial_rhs_tolerance": true,
+  "scope": "CPU archived-generation versus candidate common-input 100 accepted steps; CUDA/MPI pending",
+  "phase0_gate_complete": false
+}

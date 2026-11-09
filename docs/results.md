@@ -52,3 +52,5 @@ validation; do not edit or bypass signatures to resume.
 
 See the [README restart example](../README.md) and
 [scientific status](scientific-status.md) before interpreting completion as reproduction.
+
+`midplane_metrics.csv` is an optional passive accepted-output diagnostic. The schema-aware read-only checkpoint inspector and separate initial-state probe format are described in [Phase 0](phase0.md); the probe format is not a normal restart mechanism.

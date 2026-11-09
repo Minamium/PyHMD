@@ -61,3 +61,7 @@ srun --ntasks=4 build/pyhmd_cuda \
 
 [単一ノードPBS雛形](../../examples/pbs_gpu4.pbs.example)はqueue/group/moduleをサイトに合わせて設定します。
 性能比較ではGPU型番・rank数・格子・受理step数・進んだ物理時刻・wall timeに加え、retry/補正量と出力設定も揃えて記録します。
+
+## Strict FPの対照実験
+
+`pyhmd build --backend cuda --mpi --cuda-sm 70 --fp-mode strict`で`pyhmd_cuda_strict`を作り、`--binary`で明示選択します。既定のcompiler方針は変えません。凍結ソースの扱いとV100×4試験は[Phase 0](phase0.md)を参照してください。

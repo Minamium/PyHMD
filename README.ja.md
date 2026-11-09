@@ -124,6 +124,7 @@ max_steps打切りは`incomplete`/終了コード3、再試行停止は`stopped`
 make test
 make test-python
 python3 scripts/verify_migration.py --reference /path/to/baseline/pymhd_cpu \
+  --reference-configs /path/to/frozen/configs \
   --candidate build/pyhmd_cpu --target-grid --report build/migration.json
 ```
 
@@ -154,3 +155,5 @@ Engineのlauncherには`-np N`が付くため、Slurmの`srun`は[直接native�
 数値本体/APIを変更した場合は、それぞれに対応するsolver/APIテストも実行します。
 
 License: MIT. 元のPyMHDの式・対応範囲を維持した構造整理として公開しています。
+
+Phase 0の試験問題、strict FP、受動的な赤道診断とGPU検証の未完了事項は[Phase 0](docs/ja/phase0.md)にまとめています。

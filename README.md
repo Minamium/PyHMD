@@ -167,6 +167,7 @@ python3 scripts/check_docs.py
 make test
 make test-python
 python3 scripts/verify_migration.py --reference /path/to/baseline/pymhd_cpu \
+  --reference-configs /path/to/frozen/configs \
   --candidate build/pyhmd_cpu --target-grid --report build/migration.json
 ```
 
@@ -176,3 +177,5 @@ relevant solver/API tests. CPU results do not establish CUDA or MPI correctness.
 
 License: MIT. This release preserves the numerical equations and supported scope
 of the original PyMHD implementation.
+
+Phase 0 benchmark definitions, strict-FP controls, passive midplane sampling, and pending GPU gates are described in [Phase 0](docs/phase0.md).
