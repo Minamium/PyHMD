@@ -6,7 +6,7 @@
 commit `cb61018319d4543ca44bfb63004577d82523965a`です。
 BGKの方程式・collision・implicit solverはMHDに流用していません。
 
-| kineticEQの実装・考え方 | PyHMDでの具体化 |
+| kineticEQの実装・考え方 | PyMHDでの具体化 |
 | --- | --- |
 | `api/config.py`: frozen Config、明示的なmodel/scheme/backend | frozen Configと各設定群。未対応名を拒否。実行環境をRuntimeConfigへ分離 |
 | `api/engine.py`: orchestrationをEngineへ集約 | 設定/結果管理はPython、stepper全体はnativeが所有 |

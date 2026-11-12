@@ -19,8 +19,8 @@ Local checks on 2026-11-09 used macOS arm64, Apple Clang 21.0.0, Python 3.13.2.
 | Visualization | Overview/history PNG and VTK generated; PNG inspected visually |
 | Linux CI | CPU/API suite, disk run/validation/render, Python 3.10 installed-wheel checks passed at `0141fdd` |
 
-See [baseline Actions run 42583012368](https://github.com/Minamium/PyHMD/actions/runs/42583012368)
-and [current Actions](https://github.com/Minamium/PyHMD/actions).
+See [baseline Actions run 42583012368](https://github.com/Minamium/PyMHD/actions/runs/42583012368)
+and [current Actions](https://github.com/Minamium/PyMHD/actions).
 
 Native tests cover uniform states, Alfvén waves, diffusion, Brio–Wu, CT invariants,
 thermal recovery, rejected steps, metric reconstruction, spherical resistive
@@ -40,7 +40,7 @@ make test-python
 python3 scripts/verify_migration.py \
   --reference /path/to/frozen/pymhd_cpu \
   --reference-configs /path/to/frozen/configs \
-  --candidate build/pyhmd_cpu --target-grid \
+  --candidate build/pymhd_cpu --target-grid \
   --report build/migration_validation.json
 ```
 

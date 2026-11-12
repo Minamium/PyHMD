@@ -1,4 +1,4 @@
-# PyHMD
+# PyMHD
 
 [English](README.md) | [日本語](README.ja.md)
 
@@ -14,16 +14,16 @@ kineticEQの **Config / Engine / Result** と、モデル・実行環境・保�
 CPU版にはPython 3.10以降、C++17コンパイラ、GNU Makeが必要です。
 
 ```bash
-git clone https://github.com/Minamium/PyHMD.git
-cd PyHMD
+git clone https://github.com/Minamium/PyMHD.git
+cd PyMHD
 python3 -m pip install -e '.[viz]'
-pyhmd build --backend cpu
-pyhmd init --problem alfven --output run.json
-pyhmd plan run.json --out runs/alfven_demo
-pyhmd run run.json --out runs/alfven_demo
-pyhmd inspect runs/alfven_demo
-pyhmd validate runs/alfven_demo
-pyhmd render runs/alfven_demo
+pymhd build --backend cpu
+pymhd init --problem alfven --output run.json
+pymhd plan run.json --out runs/alfven_demo
+pymhd run run.json --out runs/alfven_demo
+pymhd inspect runs/alfven_demo
+pymhd validate runs/alfven_demo
+pymhd render runs/alfven_demo
 ```
 
 設定・実行管理と基本的な検証はPython標準ライブラリだけで動きます。
@@ -33,7 +33,7 @@ wheelにもネイティブソースとpresetを含むため、インストール
 ## Python API
 
 ```python
-from pyhmd import Config, Engine, ResultOptions
+from pymhd import Config, Engine, ResultOptions
 
 cfg = Config(
     problem="thin_disk",
@@ -54,7 +54,7 @@ result.render(xlim=(0, 10), ylim=(0, 10))
 辞書による部分指定は問題presetへ適用され、凍結dataclassに正規化されます。
 未知のキー・未対応のmodel/scheme/dtypeを拒否します。
 設定の組合せは実行前にネイティブ側でも検証します。
-既存INIも`RunSpec.load("configs/thin_disk.ini")`、または`pyhmd run configs/thin_disk.ini --out ...`で使用できます。
+既存INIも`RunSpec.load("configs/thin_disk.ini")`、または`pymhd run configs/thin_disk.ini --out ...`で使用できます。
 
 ## 現在の対応範囲
 
@@ -80,12 +80,12 @@ CUDAは`nvcc`、MPIは`mpicxx`/`mpirun`を使用します。HPCではサイト�
 
 ```bash
 # V100=70、A30=80、GH200=90
-pyhmd build --backend cuda --cuda-sm 70
-pyhmd run examples/thin_disk_cuda.json --out runs/gpu_demo
+pymhd build --backend cuda --cuda-sm 70
+pymhd run examples/thin_disk_cuda.json --out runs/gpu_demo
 
 # MPI版。Pythonの外側でmpirunを重ねず、RuntimeConfigがnative ranksを起動します。
-pyhmd build --backend cuda --mpi --cuda-sm 70
-pyhmd run examples/thin_disk_cuda4.json --out runs/gpu4_demo
+pymhd build --backend cuda --mpi --cuda-sm 70
+pymhd run examples/thin_disk_cuda4.json --out runs/gpu4_demo
 ```
 
 `CUDA_VISIBLE_DEVICES`を保持し、各native rankが割当内のlocal rankに対応するGPUを使います。
@@ -94,7 +94,11 @@ MPI実行時のエラーはnative側で協調処理します。
 [HPCの実行方法](docs/ja/hpc.md)を参照してください。
 
 `make cpu`、`make cuda-single CUDA_SM=70`、`make cuda CUDA_SM=70`も利用できます。
-正式な実行ファイル名は`build/pyhmd_*`です。Make経由では既存手順用の`pymhd_*`aliasも作ります。
+実行ファイルは`build/pymhd_*`です。rokkoの環境とPBSジョブは[HPCガイド](docs/ja/hpc.md)にまとめています。
+
+旧名`pyhmd`でeditable installしていた場合は、このcheckoutを再インストールし、
+importとCLIに`pymhd`を使ってください。既存結果は引き続き読み込めます。
+以前のcheckpointから再開するときは、ソースと再開署名が一致する凍結済み実行ファイルを選びます。
 
 ## 結果と再開
 
@@ -105,7 +109,7 @@ nativeの`metadata.json`、`diagnostics.csv`、`status.json`と輸送台帳も�
 
 ```python
 from dataclasses import replace
-from pyhmd import Result, RunSpec
+from pymhd import Result, RunSpec
 
 result = Result.load("runs/disk_demo")
 checkpoint = result.out_dir / result.checkpoints[-1]["path"]
@@ -125,7 +129,7 @@ make test
 make test-python
 python3 scripts/verify_migration.py --reference /path/to/baseline/pymhd_cpu \
   --reference-configs /path/to/frozen/configs \
-  --candidate build/pyhmd_cpu --target-grid --report build/migration.json
+  --candidate build/pymhd_cpu --target-grid --report build/migration.json
 ```
 
 - [設計とモジュール境界](docs/ja/architecture.md)
@@ -142,8 +146,8 @@ python3 scripts/verify_migration.py --reference /path/to/baseline/pymhd_cpu \
 API名・設定キー・コマンド・機械可読ファイルは英語のまま、対応機能と制限事項を両版で揃えます。
 [日本語ドキュメント一覧](docs/ja/index.md)と[英語ドキュメント一覧](docs/index.md)を入口にしてください。
 
-- [`$pyhmd-develop`](.agents/skills/pyhmd-develop/SKILL.md)：実装変更、数値/APIの契約、検証、配布、文書。
-- [`$pyhmd-use`](.agents/skills/pyhmd-use/SKILL.md)：設定、実行、再開、ジョブ状態、目標時刻までの所要時間、結果解析・可視化。
+- [`$pymhd-develop`](.agents/skills/pymhd-develop/SKILL.md)：実装変更、数値/APIの契約、検証、配布、文書。
+- [`$pymhd-use`](.agents/skills/pymhd-use/SKILL.md)：設定、実行、再開、ジョブ状態、目標時刻までの所要時間、結果解析・可視化。
 
 skillは`.agents/skills/`に同梱しています。[利用例](docs/ja/skills.md)を参照してください。
 グローバルなskill配置や個人設定は変更しません。

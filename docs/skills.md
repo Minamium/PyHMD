@@ -8,8 +8,8 @@ and UI metadata are in English; replies should follow the user's language.
 
 | Skill | Use it for | Entry point |
 | --- | --- | --- |
-| `$pyhmd-develop` | Source changes, numerical/API contracts, tests, packaging, documentation | [SKILL.md](../.agents/skills/pyhmd-develop/SKILL.md) |
-| `$pyhmd-use` | Job status, time estimates, settings, runs, restart, diagnostics, plots | [SKILL.md](../.agents/skills/pyhmd-use/SKILL.md) |
+| `$pymhd-develop` | Source changes, numerical/API contracts, tests, packaging, documentation | [SKILL.md](../.agents/skills/pymhd-develop/SKILL.md) |
+| `$pymhd-use` | Job status, time estimates, settings, runs, restart, diagnostics, plots | [SKILL.md](../.agents/skills/pymhd-use/SKILL.md) |
 
 In a chat working in this checkout, invoke the skill by name. If the client has
 not loaded repository skills, supply the linked `SKILL.md` path explicitly.
@@ -18,11 +18,11 @@ No global skill installation or unrelated user configuration is modified.
 ## Example requests
 
 ```text
-Use $pyhmd-develop to change the result manifest API and test restart compatibility.
-Use $pyhmd-develop to refactor the CUDA reconstruction kernel without changing the numerics.
-Use $pyhmd-use to prepare a 600×128 thin-disk run on an existing single-GPU allocation.
-Use $pyhmd-use to check this PBS job and estimate its time to t=500 from comparable diagnostics.
-Use $pyhmd-use to inspect this completed run and plot the inner disk and transport diagnostics.
+Use $pymhd-develop to change the result manifest API and test restart compatibility.
+Use $pymhd-develop to refactor the CUDA reconstruction kernel without changing the numerics.
+Use $pymhd-use to prepare a 600×128 thin-disk run on an existing single-GPU allocation.
+Use $pymhd-use to check this PBS job and estimate its time to t=500 from comparable diagnostics.
+Use $pymhd-use to inspect this completed run and plot the inner disk and transport diagnostics.
 ```
 
 The development skill routes changes to implementation owners and appropriate
@@ -45,4 +45,4 @@ automatic selection; explicit invocation remains available.
 Run `python3 scripts/check_docs.py` for local links and language pairs. When
 editing a skill, also run the skill-creator `quick_validate.py` helper available
 in the authoring environment and review `agents/openai.yaml`. That helper is not
-a runtime dependency of PyHMD. Do not claim its syntax checks prove behavior.
+a runtime dependency of PyMHD. Do not claim its syntax checks prove behavior.

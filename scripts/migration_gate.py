@@ -11,7 +11,7 @@ import tempfile
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'src'))
-from pyhmd.results.checkpoint import read_checkpoint,compare_checkpoints
+from pymhd.results.checkpoint import read_checkpoint,compare_checkpoints
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -47,7 +47,7 @@ def invoke(binary,config,out,overrides,ranks,launcher,restart=None):
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--reference',type=Path,required=True);p.add_argument('--candidate',type=Path,default=ROOT/'build/pyhmd_cpu')
+    p.add_argument('--reference',type=Path,required=True);p.add_argument('--candidate',type=Path,default=ROOT/'build/pymhd_cpu')
     p.add_argument('--reference-configs',type=Path,required=True);p.add_argument('--report',type=Path,required=True)
     p.add_argument('--work-dir',type=Path);p.add_argument('--target-grid',action='store_true');p.add_argument('--ranks',type=int,default=1)
     p.add_argument('--launcher',nargs='+');p.add_argument('--retry-reference',type=Path);p.add_argument('--retry-candidate',type=Path)
@@ -57,7 +57,7 @@ def main(argv=None):
     report=dict(schema_version=2,passed=False,rank_count=args.ranks,scope='same-platform/backend migration, not scientific validation',
         binary_sha256={k:sha(v) for k,v in binaries.items()},config_sha256={q.name:sha(q) for q in configs.glob('*.ini')},
         compared=['all U/Psi incl. ghosts','all correction and flux ledgers','transport sidecars','clock','trial counters','snapshots','diagnostics except wall_seconds'],cases=[])
-    owner=tempfile.TemporaryDirectory(prefix='pyhmd_migration_') if args.work_dir is None else None
+    owner=tempfile.TemporaryDirectory(prefix='pymhd_migration_') if args.work_dir is None else None
     work=Path(owner.name) if owner else args.work_dir.resolve();work.mkdir(parents=True,exist_ok=True)
     cases=[('uniform',32,16,.05,{}),('alfven',64,4,.1,{}),('diffusion',64,4,.05,{}),('brio_wu',64,4,.03,{}),
            ('thin_disk',64,32,.1,{}),('alfven',64,4,.1,{'ct-emf-scheme':'face_hll'}),('thin_disk',64,32,.1,{'transport-diagnostics':'yes'})]

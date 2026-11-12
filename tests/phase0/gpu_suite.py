@@ -9,11 +9,18 @@ from dataclasses import replace
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path[:0]=[str(ROOT/'src'),str(ROOT/'tests/convergence')]
 import numpy as np
-from pyhmd import Config,Engine,RuntimeConfig,ResultOptions
-from pyhmd.config import native_ini
-from pyhmd.results.checkpoint import read_checkpoint,compare_checkpoints
-from pyhmd.backends.build import describe
+from pymhd import Config,Engine,RuntimeConfig,ResultOptions
+from pymhd.config import native_ini
+from pymhd.results.checkpoint import read_checkpoint,compare_checkpoints
+from pymhd.backends.build import describe
 from compare_probes import compare
+
+def native_layout(source):
+    for package in ('pymhd', 'pyhmd'):
+        directory = source / 'src' / package / 'native'
+        if (directory / 'fingerprint.py').is_file():
+            return directory, package
+    raise FileNotFoundError(f'Bundled native sources not found under {source}')
 
 class Suite:
     def __init__(self,args):
@@ -22,7 +29,8 @@ class Suite:
         proof=json.loads((frozen/'freeze.json').read_text())
         if hashlib.sha256((frozen/'source.tar').read_bytes()).hexdigest()!=proof['archive_sha256']:
             raise ValueError('frozen source archive checksum differs')
-        fingerprint=subprocess.check_output([sys.executable,str(args.reference_source.resolve()/'src/pyhmd/native/fingerprint.py')],text=True).strip()
+        native, _ = native_layout(args.reference_source.resolve())
+        fingerprint=subprocess.check_output([sys.executable,str(native/'fingerprint.py')],text=True).strip()
         if fingerprint!=proof['description']['source_fingerprint']:raise ValueError('reference source differs from frozen binary generation')
         for name,expected in proof['configs'].items():
             if hashlib.sha256((args.reference_source.resolve()/'configs'/name).read_bytes()).hexdigest()!=expected:
@@ -59,22 +67,23 @@ class Suite:
         for tool in (cxx,mpi,nvcc):
             self.run([tool,'--version'],'version_'+Path(tool).name)
         for generation,source in [('frozen_control',self.a.reference_source.resolve()),('candidate',ROOT)]:
-            fingerprint=subprocess.check_output([sys.executable,str(source/'src/pyhmd/native/fingerprint.py')],text=True).strip()
+            native, binary_prefix = native_layout(source)
+            fingerprint=subprocess.check_output([sys.executable,str(native/'fingerprint.py')],text=True).strip()
             for mode in ('default','strict'):
                 directory=self.out/'bin'/generation/mode;directory.mkdir(parents=True)
                 strict=mode=='strict';cpu_flags='-O3 -std=c++17 -Wall -Wextra -Wpedantic'+(' -ffp-contract=off' if strict else '')
                 cuda_flags=f'-O3 -lineinfo -Xptxas=-v -ccbin {cxx}'+(' -fmad=false' if strict else '')
-                command=['make','-B','-C',source/'src/pyhmd/native','cpu-mpi','cuda',f'BUILD_DIR={directory}',f'CXX={cxx}',f'MPICXX={mpi}',f'NVCC={nvcc}',
+                command=['make','-B','-C',native,'cpu-mpi','cuda',f'BUILD_DIR={directory}',f'CXX={cxx}',f'MPICXX={mpi}',f'NVCC={nvcc}',
                          'CUDA_SM=70',f'CXXFLAGS={cpu_flags}',f'CUDAFLAGS={cuda_flags}']
                 if generation=='candidate':command += [f'FP_MODE={mode}']
                 self.run(command,'build_'+generation+'_'+mode)
                 suffix='_strict' if strict and generation=='candidate' else ''
-                entry=dict(cpu=directory/('pyhmd_cpu_mpi'+suffix),cuda=directory/('pyhmd_cuda'+suffix))
+                entry=dict(cpu=directory/(binary_prefix+'_cpu_mpi'+suffix),cuda=directory/(binary_prefix+'_cuda'+suffix))
                 for backend,compiler in [('cpu',mpi),('cuda',nvcc)]:
                     for probe in ('operator_probe','periodic_probe','retry_checkpoint'):
                         output=directory/(probe+'_'+backend)
-                        common=['-O3','-std=c++17','-DPYMHD_MPI',f'-DPYMHD_SOURCE_FINGERPRINT="{fingerprint}"','-I'+str(source/'src/pyhmd/native/include')]
-                        if strict:common += ['-DPYHMD_STRICT_FP']
+                        common=['-O3','-std=c++17','-DPYMHD_MPI',f'-DPYMHD_SOURCE_FINGERPRINT="{fingerprint}"','-I'+str(native/'include')]
+                        if strict:common += ['-DPYMHD_STRICT_FP']
                         if backend=='cuda':
                             command=[compiler,'-x','cu','--extended-lambda','-arch=sm_70','-DPYMHD_CUDA','-ccbin',cxx,*common,*mpi_compile]
                             if strict:command += ['-fmad=false']
@@ -87,7 +96,7 @@ class Suite:
                 if generation=='candidate' and mode=='default':
                     output=directory/'cached_rhs_cuda'
                     self.run([nvcc,'-x','cu','-O3','-std=c++17','--extended-lambda','-arch=sm_70','-DPYMHD_CUDA','-DPYMHD_MPI','-ccbin',cxx,
-                              '-I'+str(source/'src/pyhmd/native/include'),*mpi_compile,ROOT/'tests/gpu_rhs_equivalence.cpp','-o',output,*mpi_link],
+                              '-I'+str(native/'include'),*mpi_compile,ROOT/'tests/gpu_rhs_equivalence.cpp','-o',output,*mpi_link],
                              'compile_cached_rhs_cuda')
                     entry['cached_rhs_cuda']=output
         files=list((self.out/'bin').rglob('*'))

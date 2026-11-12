@@ -1,0 +1,4 @@
+interface:
+  display_name: "PyMHD Simulation"
+  short_description: "Configure, run, resume and analyze PyMHD simulations"
+  default_prompt: "Use $pymhd-use to prepare this PyMHD run and inspect its numerical results."

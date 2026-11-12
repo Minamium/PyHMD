@@ -1,24 +1,24 @@
 #!/bin/bash
 #PBS -S /bin/bash
-#PBS -N pyhmd_phase0
+#PBS -N pymhd_phase0
 #PBS -l select=1:ngpus=4:ncpus=8:mpiprocs=4:mem=64gb
 #PBS -l walltime=24:00:00
 #PBS -r n
 #PBS -j oe
-# Supply site queue/account and PYHMD_SITE_ENV at submission; never allocate here.
+# Supply site queue/account and PYMHD_SITE_ENV at submission; never allocate here.
 set -euo pipefail
 cd "${PBS_O_WORKDIR:?}"
-: "${PBS_JOBID:?}" "${PBS_NODEFILE:?}" "${PYHMD_SITE_ENV:?}" "${PYHMD_FROZEN_SOURCE:?}"
-source "$PYHMD_SITE_ENV"
-PYHMD_HOST="$(hostname -s)"
-PYHMD_ALLOCATED_HOSTS="$(awk 'NF {split($1,a,"."); sub(/\[[0-9]+\]$/,"",a[1]); seen[a[1]]=1} END {for(h in seen) print h}' "$PBS_NODEFILE")"
-[[ "$PYHMD_ALLOCATED_HOSTS" == "$PYHMD_HOST" ]] || { printf 'Single allocated physical node required\n' >&2; exit 2; }
-PYHMD_JOB_ROOT="${PYHMD_JOB_ROOT:-$PBS_O_WORKDIR/phase0_results}"
-mkdir -p "$PYHMD_JOB_ROOT/bin" "$PYHMD_JOB_ROOT/p4"
-"$NVCC" -O2 -ccbin "$CXX" -arch=sm_70 tests/phase0/device_probe.cpp -o "$PYHMD_JOB_ROOT/bin/gpu_probe"
-PYHMD_VERIFIED_MASK="$(python3 tests/phase0/v100_allocation.py "$PYHMD_JOB_ROOT" 4)"
-if [[ -n "$PYHMD_VERIFIED_MASK" ]]; then export CUDA_VISIBLE_DEVICES="$PYHMD_VERIFIED_MASK"; fi
+: "${PBS_JOBID:?}" "${PBS_NODEFILE:?}" "${PYMHD_SITE_ENV:?}" "${PYMHD_FROZEN_SOURCE:?}"
+source "$PYMHD_SITE_ENV"
+PYMHD_HOST="$(hostname -s)"
+PYMHD_ALLOCATED_HOSTS="$(awk 'NF {split($1,a,"."); sub(/\[[0-9]+\]$/,"",a[1]); seen[a[1]]=1} END {for(h in seen) print h}' "$PBS_NODEFILE")"
+[[ "$PYMHD_ALLOCATED_HOSTS" == "$PYMHD_HOST" ]] || { printf 'Single allocated physical node required\n' >&2; exit 2; }
+PYMHD_JOB_ROOT="${PYMHD_JOB_ROOT:-$PBS_O_WORKDIR/phase0_results}"
+mkdir -p "$PYMHD_JOB_ROOT/bin" "$PYMHD_JOB_ROOT/p4"
+"$NVCC" -O2 -ccbin "$CXX" -arch=sm_70 tests/phase0/device_probe.cpp -o "$PYMHD_JOB_ROOT/bin/gpu_probe"
+PYMHD_VERIFIED_MASK="$(python3 tests/phase0/v100_allocation.py "$PYMHD_JOB_ROOT" 4)"
+if [[ -n "$PYMHD_VERIFIED_MASK" ]]; then export CUDA_VISIBLE_DEVICES="$PYMHD_VERIFIED_MASK"; fi
 export PYTHONPATH="$PWD/src${PYTHONPATH:+:$PYTHONPATH}" PYTHONUNBUFFERED=1
 export PYMHD_GPU_BLOCK_SIZE=128 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
 unset PYMHD_KERNEL_STATS
-python3 tests/phase0/gpu_suite.py --reference-source "$PYHMD_FROZEN_SOURCE" --output "$PYHMD_JOB_ROOT/suite"
+python3 tests/phase0/gpu_suite.py --reference-source "$PYMHD_FROZEN_SOURCE" --output "$PYMHD_JOB_ROOT/suite"

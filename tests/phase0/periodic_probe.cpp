@@ -1,5 +1,9 @@
 // A single exchange must preserve arbitrary mean flux, before time integration.
+#if __has_include("pymhd/problems/initialize.hpp")
+#include "pymhd/problems/initialize.hpp"
+#else
 #include "pyhmd/problems/initialize.hpp"
+#endif
 #include <iostream>
 int main(int argc,char**argv) {
     World world(argc,argv);

@@ -1,4 +1,4 @@
-# PyHMD
+# PyMHD
 
 [English](README.md) | [日本語](README.ja.md)
 
@@ -17,16 +17,16 @@ code, submit a job, or select a GPU.
 The CPU build needs Python 3.10+, a C++17 compiler, and GNU Make.
 
 ```bash
-git clone https://github.com/Minamium/PyHMD.git
-cd PyHMD
+git clone https://github.com/Minamium/PyMHD.git
+cd PyMHD
 python3 -m pip install -e '.[viz]'
-pyhmd build --backend cpu
-pyhmd init --problem alfven --output run.json
-pyhmd plan run.json --out runs/alfven_demo
-pyhmd run run.json --out runs/alfven_demo
-pyhmd inspect runs/alfven_demo
-pyhmd validate runs/alfven_demo
-pyhmd render runs/alfven_demo
+pymhd build --backend cpu
+pymhd init --problem alfven --output run.json
+pymhd plan run.json --out runs/alfven_demo
+pymhd run run.json --out runs/alfven_demo
+pymhd inspect runs/alfven_demo
+pymhd validate runs/alfven_demo
+pymhd render runs/alfven_demo
 ```
 
 Configuration, orchestration, and basic numerical validation use only the Python
@@ -41,7 +41,7 @@ Use a new output directory for each run; nonempty directories are rejected.
 ## Python API
 
 ```python
-from pyhmd import Config, Engine, ResultOptions
+from pymhd import Config, Engine, ResultOptions
 
 cfg = Config(
     problem="thin_disk",
@@ -63,7 +63,7 @@ Partial dictionaries merge into the problem preset and become frozen dataclasses
 Unknown keys and unsupported model/scheme/dtype names are rejected. Native
 validation checks cross-option restrictions before execution. Existing INI files
 remain usable through `RunSpec.load("configs/thin_disk.ini")` or
-`pyhmd run configs/thin_disk.ini --out runs/my_disk`.
+`pymhd run configs/thin_disk.ini --out runs/my_disk`.
 
 ## Supported scope
 
@@ -92,12 +92,12 @@ an Open MPI-compatible `mpicxx --showme` wrapper.
 
 ```bash
 # Example architecture targets: V100=70, A30=80, GH200=90.
-pyhmd build --backend cuda --cuda-sm 70
-pyhmd run examples/thin_disk_cuda.json --out runs/gpu_demo
+pymhd build --backend cuda --cuda-sm 70
+pymhd run examples/thin_disk_cuda.json --out runs/gpu_demo
 
 # The Engine launches native ranks; do not wrap Python itself in mpirun.
-pyhmd build --backend cuda --mpi --cuda-sm 70
-pyhmd run examples/thin_disk_cuda4.json --out runs/gpu4_demo
+pymhd build --backend cuda --mpi --cuda-sm 70
+pymhd run examples/thin_disk_cuda4.json --out runs/gpu4_demo
 ```
 
 The native layer preserves `CUDA_VISIBLE_DEVICES` and maps local ranks to GPUs
@@ -105,10 +105,14 @@ inside that allocation. Decomposition is along the first coordinate; halos and
 shared face tables pass through host memory. See the [HPC guide](docs/hpc.md)
 for launchers, the PBS template, and direct execution.
 
-`make cpu`, `make cuda-single CUDA_SM=70`, and `make cuda CUDA_SM=70` are also
-supported. Canonical executables are `build/pyhmd_*`; the root Makefile also
-creates legacy `pymhd_*` aliases. This layout has CPU validation; CUDA/MPI builds
-and performance require separate hardware checks.
+`make cpu`, `make cuda-single CUDA_SM=70`, and `make cuda CUDA_SM=70` produce
+`build/pymhd_*` executables. The Rokko environment and PBS jobs are documented
+in the [HPC guide](docs/hpc.md#rokko-pbs).
+
+If upgrading an editable install from the former `pyhmd` name, reinstall this
+checkout and use `pymhd` for imports and commands. Existing results remain
+readable. To resume an earlier checkpoint, select its matching frozen
+executable so the source and restart signatures match.
 
 ## Results and restart
 
@@ -120,7 +124,7 @@ Manifest updates are atomic.
 
 ```python
 from dataclasses import replace
-from pyhmd import Result, RunSpec
+from pymhd import Result, RunSpec
 
 result = Result.load("runs/disk_demo")
 checkpoint = result.out_dir / result.checkpoints[-1]["path"]
@@ -156,9 +160,9 @@ machine-readable artifacts remain in English.
 
 Two focused skills are included in `.agents/skills/`:
 
-- [`$pyhmd-develop`](.agents/skills/pyhmd-develop/SKILL.md): implementation,
+- [`$pymhd-develop`](.agents/skills/pymhd-develop/SKILL.md): implementation,
   numerical/API contracts, regression checks, packaging, and bilingual docs.
-- [`$pyhmd-use`](.agents/skills/pyhmd-use/SKILL.md): supported configurations,
+- [`$pymhd-use`](.agents/skills/pymhd-use/SKILL.md): supported configurations,
   runs, restart, job status, time-to-target estimates, diagnostics, and plots.
 
 ## Development checks
@@ -169,7 +173,7 @@ make test
 make test-python
 python3 scripts/verify_migration.py --reference /path/to/baseline/pymhd_cpu \
   --reference-configs /path/to/frozen/configs \
-  --candidate build/pyhmd_cpu --target-grid --report build/migration.json
+  --candidate build/pymhd_cpu --target-grid --report build/migration.json
 ```
 
 Migration comparison requires a separately preserved baseline binary.

@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N pymhd_disk
+#PBS -q G
+#PBS -l select=1:ngpus=4:ncpus=8:mpiprocs=4:mem=64gb
+#PBS -l walltime=01:00:00
+#PBS -r n
+#PBS -j oe
+set -euo pipefail
+cd "${PBS_O_WORKDIR:?Submit from the PyMHD checkout}"
+exec bash scripts/rokko/run_disk.sh

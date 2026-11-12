@@ -1,7 +1,7 @@
 CXX ?= c++
 CXXFLAGS ?= -O3 -std=c++17 -Wall -Wextra -Wpedantic
 TEST_OUTPUT ?= runs/verification
-NATIVE := src/pyhmd/native
+NATIVE := src/pymhd/native
 BUILD_DIR ?= $(CURDIR)/build
 FP_MODE ?= default
 .PHONY: all cpu cpu-mpi cuda cuda-single test test-python
@@ -10,7 +10,7 @@ CONVERGENCE_OUTPUT ?= runs/convergence
 GPU_OUTPUT ?= runs/phase0_gpu
 FROZEN_SOURCE ?=
 test-convergence: cpu
-	PYTHONPATH=src python3 tests/convergence/run.py --binary build/pyhmd_cpu --output "$(CONVERGENCE_OUTPUT)"
+	PYTHONPATH=src python3 tests/convergence/run.py --binary build/pymhd_cpu --output "$(CONVERGENCE_OUTPUT)"
 test-gpu:
 	@test -n "$(FROZEN_SOURCE)" || { echo 'Set FROZEN_SOURCE to an independently archived source directory with ../freeze.json'; exit 2; }
 	PYTHONPATH=src python3 tests/phase0/gpu_suite.py --output "$(GPU_OUTPUT)" --reference-source "$(FROZEN_SOURCE)"
@@ -24,7 +24,6 @@ benchmark: cpu
 all: cpu
 cpu cpu-mpi cuda cuda-single:
 	$(MAKE) -C $(NATIVE) $@ BUILD_DIR="$(abspath $(BUILD_DIR))"
-	@case "$@" in cpu) name=cpu;; cpu-mpi) name=cpu_mpi;; cuda) name=cuda;; cuda-single) name=cuda_single;; esac; suffix=; if [ "$(FP_MODE)" = strict ]; then suffix=_strict; fi; ln -sf "pyhmd_$$name$$suffix" "$(BUILD_DIR)/pymhd_$$name$$suffix"
 test-python: cpu
 	PYTHONPATH=src python3 -m unittest discover -s tests/python -v
 test: cpu

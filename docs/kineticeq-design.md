@@ -6,7 +6,7 @@ The reference is [kineticEQ](https://github.com/Minamium/kineticEQ), commit
 `cb61018319d4543ca44bfb63004577d82523965a`. Its BGK equations, collision operator,
 and implicit solvers are not reused as MHD algorithms.
 
-| kineticEQ implementation / idea | PyHMD adaptation |
+| kineticEQ implementation / idea | PyMHD adaptation |
 | --- | --- |
 | `api/config.py`: frozen Config, explicit model/scheme/backend | Frozen groups, unsupported-name rejection, separate RuntimeConfig |
 | `api/engine.py`: centralized orchestration | Python manages setup/results; the whole stepper remains native |

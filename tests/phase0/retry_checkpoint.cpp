@@ -1,6 +1,11 @@
 // Force a rejected trial using the public stepper; write all accepted ledgers.
+#if __has_include("pymhd/io/checkpoint.hpp")
+#include "pymhd/problems/initialize.hpp"
+#include "pymhd/io/checkpoint.hpp"
+#else
 #include "pyhmd/problems/initialize.hpp"
 #include "pyhmd/io/checkpoint.hpp"
+#endif
 int main(int argc,char**argv) {
     World world(argc,argv);
     try {

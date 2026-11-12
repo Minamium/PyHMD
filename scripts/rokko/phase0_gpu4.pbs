@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N pymhd_phase0
+#PBS -q G
+#PBS -l select=1:ngpus=4:ncpus=8:mpiprocs=4:mem=64gb
+#PBS -l walltime=24:00:00
+#PBS -r n
+#PBS -j oe
+set -euo pipefail
+cd "${PBS_O_WORKDIR:?Submit from the PyMHD checkout}"
+: "${PBS_JOBID:?}" "${PYMHD_FROZEN_SOURCE:?Supply the frozen source directory at submission}"
+export PYMHD_SITE_ENV="${PYMHD_SITE_ENV:-$PWD/scripts/rokko/env.sh}"
+if [[ -z "${PYMHD_JOB_ROOT:-}" ]]; then
+    run_base=${PYMHD_RUN_BASE:-$PWD/runs}
+    mkdir -p "$run_base"
+    PYMHD_JOB_ROOT=$(mktemp -d "$run_base/rokko_phase0_${PBS_JOBID%%.*}_XXXXXX")
+fi
+export PYMHD_JOB_ROOT
+printf 'Job directory: %s\n' "$PYMHD_JOB_ROOT"
+exec bash scripts/phase0_gpu4.pbs.example

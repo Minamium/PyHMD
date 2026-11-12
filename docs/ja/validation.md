@@ -35,7 +35,7 @@ make test-python
 python3 scripts/verify_migration.py \
   --reference /path/to/frozen/pymhd_cpu \
   --reference-configs /path/to/frozen/configs \
-  --candidate build/pyhmd_cpu --target-grid \
+  --candidate build/pymhd_cpu --target-grid \
   --report build/migration_validation.json
 ```
 
@@ -49,13 +49,13 @@ installed-wheelの契約を実行し、旧版との比較を実施したよう�
 SF2014の定量再現も未達で、[科学的な検証範囲](scientific-status.md)に既知の差を記録しています。
 
 GitHub ActionsではCPU suiteとPython 3.10のinstalled-wheel検査を設定しています。
-各commitの実行結果は[Actions](https://github.com/Minamium/PyHMD/actions)で確認できます。
+各commitの実行結果は[Actions](https://github.com/Minamium/PyMHD/actions)で確認できます。
 
 ## Linux CIと文書・skillの確認
 
 commit `0141fdd`では、LinuxのCPU/APIテスト、円盤の実行・検証・描画、Python 3.10でのwheel検証も合格しました。
-[記録されたActions実行](https://github.com/Minamium/PyHMD/actions/runs/42583012368)と
-[各commitのActions](https://github.com/Minamium/PyHMD/actions)を参照してください。
+[記録されたActions実行](https://github.com/Minamium/PyMHD/actions/runs/42583012368)と
+[各commitのActions](https://github.com/Minamium/PyMHD/actions)を参照してください。
 scalar/batched PPMの比較は入力ステンシルの大きさに対するFP64丸め誤差を許容します。
 cache/retry/fluxの厳密一致が指定された検査は維持しています。
 

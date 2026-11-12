@@ -7,7 +7,7 @@
 | `result.json` | schema、設定、runtime、native能力、binary SHA、状態、artifact参照 |
 | `inputs/run.json` | 正規化された再実行用spec |
 | `inputs/native.ini` | nativeへ実際に渡した全設定 |
-| `inputs/pyhmd_*` | 実行に使ったbinaryの固定コピー |
+| `inputs/pymhd_*` | 実行に使ったbinaryの固定コピー |
 | `run.log` | native/MPIのstdoutとstderr |
 | `metadata.json`, `diagnostics.csv`, `status.json` | nativeの設定・物理量・到達/停止状態 |
 | `snapshot_*.csv` | セルデータ、時刻・step |
@@ -42,7 +42,7 @@ main binary形式version1、旧magic、metadata version2を維持しています
 
 準備・実行・中断では`created`、`running`、`interrupted`になる場合もあります。
 Engineの`run`は同期実行で、nativeの標準出力・標準エラーは`run.log`へ保存します。
-legacy結果の検証では期待時刻を明示します。例：`pyhmd validate runs/legacy --expect-time 1`。
+legacy結果の検証では期待時刻を明示します。例：`pymhd validate runs/legacy --expect-time 1`。
 Python CLIには`--restart`オプションがないため、Pythonの`RuntimeConfig.restart`またはINIの`restart`を使います。
 [READMEの再開例](../../README.ja.md)も参照してください。
 

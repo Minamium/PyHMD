@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pyhmd"
+name = "pymhd"
 version = "0.1.0"
 description = "Typed Python orchestration and C++/CUDA finite-volume resistive MHD"
 readme = "README.md"
@@ -18,14 +18,14 @@ viz = ["numpy>=1.24", "matplotlib>=3.7", "Pillow>=10"]
 test = ["numpy>=1.24"]
 
 [project.scripts]
-pyhmd = "pyhmd.cli:main"
+pymhd = "pymhd.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["pyhmd*"]
+include = ["pymhd*"]
 
 [tool.setuptools.package-data]
-pyhmd = ["presets/*.ini", "native/Makefile", "native/include/**/*.hpp", "native/src/*.cpp"]
+pymhd = ["presets/*.ini", "native/Makefile", "native/include/**/*.hpp", "native/src/*.cpp"]
 
 [project.urls]
-Repository = "https://github.com/Minamium/PyHMD"
+Repository = "https://github.com/Minamium/PyMHD"

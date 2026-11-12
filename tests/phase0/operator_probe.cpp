@@ -1,6 +1,11 @@
 // Dump a frozen common input, one RHS and a fixed accepted-step trajectory.
+#if __has_include("pymhd/io/checkpoint.hpp")
+#include "pymhd/io/checkpoint.hpp"
+#include "pymhd/problems/initialize.hpp"
+#else
 #include "pyhmd/io/checkpoint.hpp"
 #include "pyhmd/problems/initialize.hpp"
+#endif
 #include <filesystem>
 #include <iterator>
 #include <chrono>
@@ -9,7 +14,7 @@ static std::string config_text(const char* path) {
     return {std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>()};
 }
 static const char* fp_policy() {
-#ifdef PYHMD_STRICT_FP
+#ifdef PYMHD_STRICT_FP
     return "strict";
 #else
     return "default";
@@ -38,7 +43,7 @@ int main(int argc,char**argv) {
             // Probe-only frozen full-domain input, including physical ghosts.
             // This is not a repartitioned restart: only an initial RHS/step test.
             pymhd_checkpoint::Reader input(std::filesystem::path(argv[3])/"common_input.bin");
-            if(input.string()!="PyHMD-PROBE-INITIAL-1"||input.string()!=config_text(argv[1])||input.string()!=fp_policy())throw std::runtime_error("probe config/FP policy differs");
+            if(input.string()!="PyMHD-PROBE-INITIAL-1"||input.string()!=config_text(argv[1])||input.string()!=fp_policy())throw std::runtime_error("probe config/FP policy differs");
             // A test deliberately compares different algorithm/source generations.
             // Record the producer fingerprint; never use this format for restart.
             const auto producer=input.string();(void)producer;
@@ -53,7 +58,7 @@ int main(int argc,char**argv) {
         else if(argc>3&&std::string(argv[3])!="-"){auto clock=pymhd_checkpoint::read(s,argv[3],p.output_interval);time=clock.time;first_step=clock.step;}
         else {initialize(s,host);s.ensure_transport_origin();pymhd_checkpoint::write(s,output/"input",{0,0,p.output_interval,p.output_interval,0});}
         if(world.size==1) {
-            pymhd_checkpoint::Writer common(output/"common_input.bin");common.string("PyHMD-PROBE-INITIAL-1");common.string(config_text(argv[1]));common.string(fp_policy());common.string(PYMHD_SOURCE_FINGERPRINT);
+            pymhd_checkpoint::Writer common(output/"common_input.bin");common.string("PyMHD-PROBE-INITIAL-1");common.string(config_text(argv[1]));common.string(fp_policy());common.string(PYMHD_SOURCE_FINGERPRINT);
             common.value(p.nx);common.value(p.ny);common.buffer(s.u);common.buffer(s.a);common.finish();
         }
         std::ostringstream rank;rank<<std::setw(6)<<std::setfill('0')<<world.rank;std::string suffix="_rank"+rank.str()+".bin";

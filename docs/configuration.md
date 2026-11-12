@@ -38,7 +38,7 @@ passed to that parser.
 | `boundary` | `lower1/upper1/lower2/upper2`, `inner_normal_field` |
 | `time` | `cfl`, `t_end`, `max_steps` |
 
-The dataclasses in [config.py](../src/pyhmd/config.py) define supported fields and
+The dataclasses in [config.py](../src/pymhd/config.py) define supported fields and
 choices. Only `resistive_mhd`, `ppm_hll_ssprk3`, and `float64` are registered for
 model, scheme, and dtype. Existing options such as `thermal_recovery` remain;
 HLLD, 3D, and FP32 are not selectable.

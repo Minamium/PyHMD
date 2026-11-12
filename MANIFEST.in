@@ -1,12 +1,13 @@
 include Makefile LICENSE README.md README.ja.md AGENTS.md
 recursive-include .agents/skills *.md *.yaml
 include src/main.cpp
-recursive-include src/pyhmd/native *.hpp *.cpp Makefile *.py
-recursive-include src/pyhmd/presets *.ini
+recursive-include src/pymhd/native *.hpp *.cpp Makefile *.py
+recursive-include src/pymhd/presets *.ini
 recursive-include configs *.ini
 recursive-include docs *.md *.json
 recursive-include examples *.json *.py *.example
 recursive-include tests *.cpp *.py *.md
 recursive-include scripts *.py *.sh *.example
+recursive-include scripts/rokko *.pbs
 include python/*.py python/requirements.txt
 global-exclude __pycache__ *.pyc

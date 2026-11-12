@@ -2,10 +2,10 @@
 # Scheduler-independent launch; use inside the target cluster's allocation.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RANKS="${PYHMD_RANKS:-${PYMHD_RANKS:-1}}"
-BINARY="${PYHMD_BINARY:-${PYMHD_BINARY:-${ROOT}/build/pyhmd_cuda}}"
-LAUNCHER="${PYHMD_LAUNCHER:-${PYMHD_LAUNCHER:-mpirun}}"
-if [[ ! "${RANKS}" =~ ^[1-9][0-9]*$ ]]; then printf 'Invalid PYHMD_RANKS.\n' >&2; exit 2; fi
+RANKS="${PYMHD_RANKS:-${PYHMD_RANKS:-1}}"
+BINARY="${PYMHD_BINARY:-${PYHMD_BINARY:-${ROOT}/build/pymhd_cuda}}"
+LAUNCHER="${PYMHD_LAUNCHER:-${PYHMD_LAUNCHER:-mpirun}}"
+if [[ ! "${RANKS}" =~ ^[1-9][0-9]*$ ]]; then printf 'Invalid PYMHD_RANKS.\n' >&2; exit 2; fi
 test -x "${BINARY}"
 command -v "${LAUNCHER}" >/dev/null
 cd "${ROOT}"

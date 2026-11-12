@@ -9,9 +9,9 @@ import sys
 
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'src'))
 import numpy as np
-from pyhmd import Config,Engine,RuntimeConfig,ResultOptions
-from pyhmd.backends.build import describe,sha256
-from pyhmd.results.checkpoint import read_checkpoint
+from pymhd import Config,Engine,RuntimeConfig,ResultOptions
+from pymhd.backends.build import describe,sha256
+from pymhd.results.checkpoint import read_checkpoint
 from analytic import references,assemble,errors,frame
 
 def main():

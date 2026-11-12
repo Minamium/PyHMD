@@ -34,7 +34,7 @@ INIの`#`/`;`/改行はnative parserの制限があるため、nativeへ渡すpa
 - `boundary`: lower1/upper1/lower2/upper2、inner_normal_field。
 - `time`: cfl、t_end、max_steps。
 
-選択肢は`pyhmd.config`のdataclassが公開仕様です。
+選択肢は`pymhd.config`のdataclassが公開仕様です。
 model=`resistive_mhd`、scheme=`ppm_hll_ssprk3`、dtype=`float64`のみを登録しています。
 `thermal_recovery`など既存の比較optionを維持しています。HLLD、3D、FP32などの名前だけの追加はしていません。
 
@@ -52,7 +52,7 @@ model=`resistive_mhd`、scheme=`ppm_hll_ssprk3`、dtype=`float64`のみを登録
 単純な数値integrity検査、輸送診断、科学的比較の設定を混同しません。
 特にtransport_diagnosticsはsphere/log disk・face_hll・evolveなどのnative制約を持ちます。
 
-設定の定義と選択肢は[config.py](../../src/pyhmd/config.py)を参照してください。
+設定の定義と選択肢は[config.py](../../src/pymhd/config.py)を参照してください。
 輸送台帳などの保存は実行前に選びます。保存していない面流束を、後から実測の輸送診断として復元することはできません。
 出力間隔はdtを切り詰めて数値軌道を変えるため、計算結果や性能の比較では固定します。
 

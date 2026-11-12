@@ -37,10 +37,10 @@ Configは問題の数学、RuntimeConfigは実行環境、ResultOptionsは保存
 
 ## Native層
 
-ソースはwheelにも含めるため`src/pyhmd/native/`に配置しています。
+ソースはwheelにも含めるため`src/pymhd/native/`に配置しています。
 `include/`はその公開includeルートへのcheckout内aliasです。
 
-| `include/pyhmd/` | 責務 |
+| `include/pymhd/` | 責務 |
 | --- | --- |
 | `core/types.hpp` | state、parameter POD、mesh view |
 | `config/native.hpp` | 既存INI/引数のparserと組合せ制約 |

@@ -11,16 +11,16 @@ make cuda-single CUDA_SM=70 NVCC=nvcc
 make cuda CUDA_SM=70 NVCC=nvcc MPICXX=mpicxx
 ```
 
-Python APIの`build_native`/`pyhmd build`はbundled sourceから同じtargetを作ります。
+Python APIの`build_native`/`pymhd build`はbundled sourceから同じtargetを作ります。
 `CXX`、`NVCC`、`MPICXX`、`CXXFLAGS`、`CUDAFLAGS`でtoolchainを明示できます。
-build先はcheckoutでは`build/`、wheelではXDG cache下、または`--build-dir`/`PYHMD_BUILD_DIR`です。
+build先はcheckoutでは`build/`、wheelではXDG cache下、または`--build-dir`/`PYMHD_BUILD_DIR`です。
 自動コンパイル・SSH・qsub/sbatchは行いません。HPCでのビルド/計算はサイトが許可した割当内で行ってください。
 
 ## EngineからのMPI実行
 
 ```python
 import os
-from pyhmd import RunSpec
+from pymhd import RunSpec
 
 spec = RunSpec.load("examples/thin_disk_cuda4.json")
 spec = spec.with_runtime(launcher=("mpirun", "--hostfile", os.environ["PBS_NODEFILE"]))
@@ -38,7 +38,7 @@ Python orchestrationを使わず、既存手順と同じように実行できま
 この場合は`result.json`やbinaryの固定コピーは作られません。
 
 ```bash
-mpirun --hostfile "$PBS_NODEFILE" -np 4 build/pyhmd_cuda \
+mpirun --hostfile "$PBS_NODEFILE" -np 4 build/pymhd_cuda \
   --config configs/thin_disk.ini --t-end 1 \
   --checkpoint-interval 0.1 --output runs/native_example
 ```
@@ -55,7 +55,7 @@ Engineはlauncher配列に`-np N`を付けます。対応するMPI launcherを�
 
 ```bash
 # サイトのMPI連携が有効な、確保済みSlurm割当内。
-srun --ntasks=4 build/pyhmd_cuda \
+srun --ntasks=4 build/pymhd_cuda \
   --config configs/thin_disk.ini --t-end 1 --output runs/slurm_native_example
 ```
 
@@ -64,4 +64,36 @@ srun --ntasks=4 build/pyhmd_cuda \
 
 ## Strict FPの対照実験
 
-`pyhmd build --backend cuda --mpi --cuda-sm 70 --fp-mode strict`で`pyhmd_cuda_strict`を作り、`--binary`で明示選択します。既定のcompiler方針は変えません。凍結ソースの扱いとV100×4試験は[Phase 0](phase0.md)を参照してください。
+`pymhd build --backend cuda --mpi --cuda-sm 70 --fp-mode strict`で`pymhd_cuda_strict`を作り、`--binary`で明示選択します。既定のcompiler方針は変えません。凍結ソースの扱いとV100×4試験は[Phase 0](phase0.md)を参照してください。
+
+## rokkoのPBSジョブ
+
+rokko上のPyMHDチェックアウトから投入します。環境スクリプトは`python/3.12.1`と
+`nvhpc/23.1`を読み込み、GCC 12.3、Open MPI、V100向けSM 70、ホスト側の単スレッド設定を
+選びます。PBSが割り当てたGPUの可視性を保持します。 [環境スクリプト](../../scripts/rokko/env.sh)
+
+割当内で手動ビルドするときはBashで`source scripts/rokko/env.sh`を実行してから、
+`PYTHONPATH=src python3 -m pymhd build --backend cuda --mpi --cuda-sm 70`を使えます。
+
+```bash
+# V100×4の短時間円盤試走
+qsub scripts/rokko/disk.pbs
+
+# V100×1で自分のJSON/INI設定を使う
+qsub -l select=1:ngpus=1:ncpus=8:mpiprocs=1:mem=64gb \
+  -v PYMHD_SPEC=/path/to/run.json scripts/rokko/disk.pbs
+
+# Phase 0。freeze.jsonとsource.tarに隣接する展開済み凍結ソースを渡す
+qsub -v PYMHD_FROZEN_SOURCE=/path/to/frozen/source scripts/rokko/phase0_gpu4.pbs
+```
+
+[円盤ジョブ](../../scripts/rokko/disk.pbs)はPBSのノードファイルからMPI rank数を取得します。
+GPUを2、4、8台にするときは単一ノードで`ngpus`と`mpiprocs`を揃えてください。
+格子、終了時刻、checkpoint間隔は`PYMHD_SPEC`で指定します。既定は専用ディレクトリ内でビルドします。
+`PYMHD_BINARY`でビルド済みCUDA+MPIバイナリ、`PYMHD_FP_MODE=strict`でstrictビルドを選べます。
+確保済みの割当内ではチェックアウトから`bash scripts/rokko/run_disk.sh`でも実行できます。
+
+PBSログには`runs/`または`PYMHD_RUN_BASE`配下のジョブディレクトリが表示されます。
+円盤の結果はその中の`result/`、[Phase 0ジョブ](../../scripts/rokko/phase0_gpu4.pbs)の
+進捗は`suite/progress.json`です。Phase 0の最初のGPU試験には未解決の差が残っています。
+[実験結果](experiment-results.md)

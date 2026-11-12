@@ -22,9 +22,9 @@ jobs:
       - run: make test
       - run: make test-python
       - run: make test-convergence
-      - run: pyhmd run examples/thin_disk_cpu.json --out runs/ci_smoke
-      - run: pyhmd validate runs/ci_smoke
-      - run: pyhmd render runs/ci_smoke
+      - run: pymhd run examples/thin_disk_cpu.json --out runs/ci_smoke
+      - run: pymhd validate runs/ci_smoke
+      - run: pymhd render runs/ci_smoke
   wheel:
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +37,7 @@ jobs:
       - name: Build and run installed bundled native sources outside checkout
         working-directory: /tmp
         run: |
-          pyhmd build --backend cpu --build-dir /tmp/pyhmd-wheel-build
-          pyhmd init --problem alfven --output /tmp/pyhmd-wheel.json
-          pyhmd run /tmp/pyhmd-wheel.json --build-dir /tmp/pyhmd-wheel-build --out /tmp/pyhmd-wheel-result
-          pyhmd validate /tmp/pyhmd-wheel-result
+          pymhd build --backend cpu --build-dir /tmp/pymhd-wheel-build
+          pymhd init --problem alfven --output /tmp/pymhd-wheel.json
+          pymhd run /tmp/pymhd-wheel.json --build-dir /tmp/pymhd-wheel-build --out /tmp/pymhd-wheel-result
+          pymhd validate /tmp/pymhd-wheel-result

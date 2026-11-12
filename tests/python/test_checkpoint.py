@@ -6,14 +6,14 @@ import struct
 import subprocess
 import tempfile
 import unittest
-from pyhmd.results.checkpoint import checksum,read_checkpoint,compare_checkpoints,CheckpointError
-from pyhmd import Config,Engine,RuntimeConfig,ResultOptions
-ROOT=Path(__file__).resolve().parents[2];BINARY=ROOT/'build/pyhmd_cpu'
+from pymhd.results.checkpoint import checksum,read_checkpoint,compare_checkpoints,CheckpointError
+from pymhd import Config,Engine,RuntimeConfig,ResultOptions
+ROOT=Path(__file__).resolve().parents[2];BINARY=ROOT/'build/pymhd_cpu'
 
 @unittest.skipUnless(BINARY.exists(),'build native CPU first')
 class CheckpointContracts(unittest.TestCase):
     def test_midplane_observer_is_passive(self):
-        with tempfile.TemporaryDirectory(prefix='pyhmd_observer_') as temp:
+        with tempfile.TemporaryDirectory(prefix='pymhd_observer_') as temp:
             results=[]
             cfg=Config(problem='thin_disk',grid={'nx1':64,'nx2':32},time={'t_end':.1})
             for enabled in (False,True):
@@ -26,7 +26,7 @@ class CheckpointContracts(unittest.TestCase):
             self.assertFalse((results[0].out_dir/'midplane_metrics.csv').exists())
 
     def test_all_state_and_accounting_fields_and_fault_detection(self):
-        with tempfile.TemporaryDirectory(prefix='pyhmd_cp_contract_') as temp:
+        with tempfile.TemporaryDirectory(prefix='pymhd_cp_contract_') as temp:
             root=Path(temp);out=root/'run'
             subprocess.run([str(BINARY),'--config',str(ROOT/'configs/thin_disk.ini'),'--nx1','16','--nx2','8','--t-end','.01','--checkpoint-interval','.01','--output',str(out)],check=True,stdout=subprocess.DEVNULL)
             state=json.loads((out/'status.json').read_text());checkpoint=out/f'checkpoint_step{state["step"]}'

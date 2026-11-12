@@ -19,7 +19,7 @@ State arrays do not travel through Python at every step.
 
 ## Python layer
 
-| Module under `src/pyhmd/` | Responsibility |
+| Module under `src/pymhd/` | Responsibility |
 | --- | --- |
 | `config.py` | Typed settings, presets, INI conversion, unknown-field rejection |
 | `spec.py` | A shared RunSpec for JSON, INI, and Python |
@@ -38,10 +38,10 @@ are included in provenance.
 
 ## Native layer
 
-Sources live in `src/pyhmd/native/` so wheels can carry them. The checkout's
+Sources live in `src/pymhd/native/` so wheels can carry them. The checkout's
 `include/` aliases the bundled include directory.
 
-| Under `native/include/pyhmd/` | Responsibility |
+| Under `native/include/pymhd/` | Responsibility |
 | --- | --- |
 | `core/types.hpp` | State, parameter POD, mesh view |
 | `config/native.hpp` | INI/argument parsing and cross-option restrictions |

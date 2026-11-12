@@ -37,7 +37,7 @@ verification before implementation.
   accepted-output/log samples, without additional dt clipping. It supports both
   CT variants and records authoritative equatorial Bθ, **raw total-energy
   pressure**, μ, and a linearly interpolated Ψ difference across r=[1.1,1.5].
-- `pyhmd build --fp-mode strict` / `make cpu FP_MODE=strict` build separate
+- `pymhd build --fp-mode strict` / `make cpu FP_MODE=strict` build separate
   `_strict` executables. CPU uses `-ffp-contract=off`, CUDA device code uses
   `-fmad=false`. Defaults are unchanged; this does not remove all compiler or
   platform variability. Select strict binaries explicitly with `--binary`.
@@ -54,7 +54,7 @@ make test-python
 make test-convergence CONVERGENCE_OUTPUT=runs/my_fresh_orders
 make benchmark
 python3 scripts/verify_migration.py --reference "$FROZEN_ROOT/pyhmd_cpu" \
-  --reference-configs "$FROZEN_ROOT/configs" --candidate build/pyhmd_cpu \
+  --reference-configs "$FROZEN_ROOT/configs" --candidate build/pymhd_cpu \
   --report build/migration.json
 # Only in an authorized GPU allocation, with a verified freeze.json/source.tar:
 make test-gpu FROZEN_SOURCE="$FROZEN_ROOT/source" GPU_OUTPUT=runs/my_fresh_gpu_audit

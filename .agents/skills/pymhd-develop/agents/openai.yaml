@@ -1,0 +1,4 @@
+interface:
+  display_name: "PyMHD Development"
+  short_description: "Develop and validate PyMHD Python and native code"
+  default_prompt: "Use $pymhd-develop to implement this PyMHD change and verify the affected contracts."

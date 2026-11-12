@@ -7,7 +7,7 @@
 | `result.json` | Schema, config/runtime, native capabilities, binary SHA, status, artifact references |
 | `inputs/run.json` | Normalized run specification |
 | `inputs/native.ini` | Settings actually passed to native code |
-| `inputs/pyhmd_*` | Frozen copy of the executed binary |
+| `inputs/pymhd_*` | Frozen copy of the executed binary |
 | `run.log` | Native/MPI stdout and stderr |
 | `metadata.json`, `diagnostics.csv`, `status.json` | Native settings, diagnostics, completion/stop state |
 | `snapshot_*.csv` | Cell data, time, and step |
@@ -34,7 +34,7 @@ array/plotting dependencies load only when requested.
 `Result.validate()` is the strict numerical-integrity validator: floor events
 cause rejection. It does not certify the physical solution or automatically mark
 `scientific_validation` successful. Legacy runs need an explicit expected time,
-for example `pyhmd validate runs/legacy --expect-time 1`.
+for example `pymhd validate runs/legacy --expect-time 1`.
 
 ## Restart
 

@@ -2,7 +2,7 @@
 
 [English](scientific-status.md) | [日本語](ja/scientific-status.md) | [Index](index.md)
 
-PyHMD is a research reimplementation targeting SF2014. Structural migration does
+PyMHD is a research reimplementation targeting SF2014. Structural migration does
 not expand or replace existing physical settings, coordinates, or operators.
 
 The implemented system is classical compressible resistive MHD, an ideal gas,

@@ -8,10 +8,10 @@ import sys
 import tempfile
 import unittest
 
-from pyhmd import Config,Engine,Result,ResultOptions,RunSpec,RuntimeConfig,SimulationError
+from pymhd import Config,Engine,Result,ResultOptions,RunSpec,RuntimeConfig,SimulationError
 
 ROOT=Path(__file__).resolve().parents[2]
-BINARY=ROOT/'build/pyhmd_cpu'
+BINARY=ROOT/'build/pymhd_cpu'
 
 class ConfigContracts(unittest.TestCase):
     def test_unknown_and_unsupported_are_rejected(self):
@@ -42,7 +42,7 @@ class ConfigContracts(unittest.TestCase):
 @unittest.skipUnless(BINARY.exists(),'build the CPU native engine first')
 class NativeIntegration(unittest.TestCase):
     def setUp(self):
-        self.temp=tempfile.TemporaryDirectory(prefix='pyhmd_api_');self.root=Path(self.temp.name)
+        self.temp=tempfile.TemporaryDirectory(prefix='pymhd_api_');self.root=Path(self.temp.name)
         self.cfg=Config(problem='alfven',grid={'nx1':32},time={'t_end':.1})
 
     def tearDown(self):self.temp.cleanup()
@@ -64,7 +64,7 @@ class NativeIntegration(unittest.TestCase):
         self.assertTrue(full.complete)
         self.assertEqual(full.validate()['validation_scope'],'numerical_integrity_only')
         self.assertEqual(Result.load(full.out_dir).manifest['scientific_validation'],'not_evaluated')
-        self.assertTrue((full.out_dir/'inputs/pyhmd_cpu').is_file())
+        self.assertTrue((full.out_dir/'inputs/pymhd_cpu').is_file())
         with self.assertRaises(FileExistsError):self.engine('full').run()
         split=self.engine('split',dataclasses.replace(self.cfg,time=dataclasses.replace(self.cfg.time,max_steps=3))).run()
         self.assertFalse(split.complete);self.assertEqual(split.status,'incomplete')
@@ -92,7 +92,7 @@ class NativeIntegration(unittest.TestCase):
         spec=RunSpec(dataclasses.replace(self.cfg,time=dataclasses.replace(self.cfg.time,max_steps=3)),
                      RuntimeConfig(binary=str(BINARY)),ResultOptions(checkpoint_interval=.02))
         path=self.root/'run.json';path.write_text(json.dumps(spec.as_dict()))
-        p=subprocess.run([sys.executable,'-m','pyhmd','run',str(path),'--out',str(self.root/'cli')],capture_output=True,text=True)
+        p=subprocess.run([sys.executable,'-m','pymhd','run',str(path),'--out',str(self.root/'cli')],capture_output=True,text=True)
         self.assertEqual(p.returncode,3,p.stderr)
         self.assertFalse(json.loads(p.stdout)['complete'])
 

@@ -3,9 +3,9 @@ import csv,json,os,signal,subprocess,sys
 from pathlib import Path
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'src'))
-from pyhmd import Config,RunSpec,RuntimeConfig,ResultOptions,Result
-from pyhmd.backends.build import describe,sha256
-from pyhmd.engine import _stop_owned_process
+from pymhd import Config,RunSpec,RuntimeConfig,ResultOptions,Result
+from pymhd.backends.build import describe,sha256
+from pymhd.engine import _stop_owned_process
 
 def bounded_run(command,env,log,seconds=1800):
     process=subprocess.Popen(command,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=os.name=='posix')
@@ -40,7 +40,7 @@ def run_ensemble(binary,output,profile,ct,members,end,grid,launcher):
         path=output/f'member_{index:02}.json';path.write_text(json.dumps(spec.as_dict(),indent=2)+'\n')
         save();env=dict(os.environ);env['PYTHONPATH']=str(ROOT/'src')+os.pathsep+env.get('PYTHONPATH','')
         with (output/f'member_{index:02}.log').open('w') as log:
-            code=bounded_run([sys.executable,'-m','pyhmd','run',str(path)],env,log)
+            code=bounded_run([sys.executable,'-m','pymhd','run',str(path)],env,log)
         item=dict(seed=index,amplitude=amplitude,returncode=code,valid=False)
         try:
             result=Result.load(folder);item['status']=result.status;item['integrity']=result.validate()

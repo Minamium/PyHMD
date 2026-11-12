@@ -37,7 +37,7 @@ AoSや2.5Dは設計上の制約であり、GRMHDそのものが不可能とい�
 追加のdt切詰めはせず、両CT方式で使えます。赤道faceのBθと**全エネルギー由来のraw pressure**からμを求め、
 r=[1.1,1.5]のΨ差は端点を線形補間します。
 
-`pyhmd build --fp-mode strict`または`make cpu FP_MODE=strict`は別名の`_strict`実行ファイルを作ります。
+`pymhd build --fp-mode strict`または`make cpu FP_MODE=strict`は別名の`_strict`実行ファイルを作ります。
 CPUは`-ffp-contract=off`、CUDA device側は`-fmad=false`です。既定は変えず、
 全てのcompiler/platform差を消すものでもありません。`--binary`で明示選択してください。
 新版のstrict/default checkpoint署名は区別されます。
@@ -53,7 +53,7 @@ make test-python
 make test-convergence CONVERGENCE_OUTPUT=runs/my_fresh_orders
 make benchmark
 python3 scripts/verify_migration.py --reference "$FROZEN_ROOT/pyhmd_cpu" \
-  --reference-configs "$FROZEN_ROOT/configs" --candidate build/pyhmd_cpu \
+  --reference-configs "$FROZEN_ROOT/configs" --candidate build/pymhd_cpu \
   --report build/migration.json
 # 許可されたGPU割当内のみ。freeze.json/source.tarも検証します。
 make test-gpu FROZEN_SOURCE="$FROZEN_ROOT/source" GPU_OUTPUT=runs/my_fresh_gpu_audit

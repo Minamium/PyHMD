@@ -9,4 +9,4 @@
 - Keep generated runs, binaries, credentials and personal cluster connection details out of commits.
 - Preserve old result readability and strict checkpoint signature checks; do not silently bypass a generation mismatch.
 - Keep English primary documentation in README.md and docs/*.md, with matching Japanese pages in README.ja.md and docs/ja/*.md. Update behavioral facts, commands, and limitations in both languages; run python3 scripts/check_docs.py for documentation changes.
-- Keep repository skills in .agents/skills/pyhmd-develop and .agents/skills/pyhmd-use focused on implementation and simulation operations respectively. Follow the task's existing authorization; the skill itself does not authorize external actions.
+- Keep repository skills in .agents/skills/pymhd-develop and .agents/skills/pymhd-use focused on implementation and simulation operations respectively. Follow the task's existing authorization; the skill itself does not authorize external actions.

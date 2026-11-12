@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -S /bin/bash
-#PBS -N pyhmd_gpu4
+#PBS -N pymhd_gpu4
 #PBS -l select=1:ngpus=4:ncpus=8:mpiprocs=4:mem=64gb
 #PBS -l walltime=01:00:00
 #PBS -j oe
@@ -9,15 +9,15 @@ set -euo pipefail
 cd "${PBS_O_WORKDIR:?}"
 : "${PBS_NODEFILE:?}"
 # Build explicitly inside the permitted allocation, or use a prebuilt artifact.
-python3 -m pyhmd build --backend cuda --mpi --cuda-sm 70
+python3 -m pymhd build --backend cuda --mpi --cuda-sm 70
 mkdir -p runs
-export PYHMD_RUN_DIR="$(mktemp -d "$PWD/runs/job_${PBS_JOBID}_XXXXXX")"
+export PYMHD_RUN_DIR="$(mktemp -d "$PWD/runs/job_${PBS_JOBID}_XXXXXX")"
 python3 - <<'PY'
 import os
-from pyhmd import RunSpec
+from pymhd import RunSpec
 spec=RunSpec.load('examples/thin_disk_cuda4.json')
 spec=spec.with_runtime(launcher=('mpirun','--hostfile',os.environ['PBS_NODEFILE']))
-result=spec.engine(out_dir=os.environ['PYHMD_RUN_DIR']).run()
+result=spec.engine(out_dir=os.environ['PYMHD_RUN_DIR']).run()
 print(result.status,result.out_dir)
 raise SystemExit(0 if result.complete else 3)
 PY

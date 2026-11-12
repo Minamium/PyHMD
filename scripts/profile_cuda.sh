@@ -7,14 +7,14 @@ cd "$ROOT"
 MODE="${1:-timing}"
 DESTINATION="${2:-runs/profiling}"
 CONFIG="${3:-configs/thin_disk.ini}"
-BINARY="${PYHMD_BINARY:-${PYMHD_BINARY:-build/pyhmd_cuda_single}}"
-STEPS="${PYHMD_PROFILE_STEPS:-${PYMHD_PROFILE_STEPS:-200}}"
+BINARY="${PYMHD_BINARY:-${PYHMD_BINARY:-build/pymhd_cuda_single}}"
+STEPS="${PYMHD_PROFILE_STEPS:-${PYHMD_PROFILE_STEPS:-200}}"
 if [[ "$MODE" != timing && "$MODE" != systems && "$MODE" != compute ]]; then
     printf 'Usage: bash scripts/profile_cuda.sh [timing|systems|compute] [OUTPUT_PARENT] [CONFIG]\n' >&2
     exit 2
 fi
 [[ -x "$BINARY" ]] || { printf 'CUDA binary not found: %s\n' "$BINARY" >&2; exit 2; }
-[[ "$STEPS" =~ ^[0-9]+$ && "$STEPS" -ge 100 ]] || { printf 'PYHMD_PROFILE_STEPS must be at least 100.\n' >&2; exit 2; }
+[[ "$STEPS" =~ ^[0-9]+$ && "$STEPS" -ge 100 ]] || { printf 'PYMHD_PROFILE_STEPS must be at least 100.\n' >&2; exit 2; }
 mkdir -p "$DESTINATION"
 PROFILE_DIR="$(mktemp -d "${DESTINATION%/}/${MODE}_XXXXXX")"
 printf 'Profile directory: %s\n' "$PROFILE_DIR"
