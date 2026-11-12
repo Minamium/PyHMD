@@ -133,6 +133,7 @@ python3 scripts/verify_migration.py --reference /path/to/baseline/pymhd_cpu \
 - [設定とJSON仕様](docs/ja/configuration.md)
 - [結果・状態・再開の契約](docs/ja/results.md)
 - [検証方法と実測範囲](docs/ja/validation.md)
+- [GPU実験・t=500の実測・Phase 0の結果](docs/ja/experiment-results.md)
 
 
 ## 言語とagent skills
@@ -142,7 +143,7 @@ API名・設定キー・コマンド・機械可読ファイルは英語のま�
 [日本語ドキュメント一覧](docs/ja/index.md)と[英語ドキュメント一覧](docs/index.md)を入口にしてください。
 
 - [`$pyhmd-develop`](.agents/skills/pyhmd-develop/SKILL.md)：実装変更、数値/APIの契約、検証、配布、文書。
-- [`$pyhmd-use`](.agents/skills/pyhmd-use/SKILL.md)：既存の設定、ビルド、実行、再開、結果解析・可視化。
+- [`$pyhmd-use`](.agents/skills/pyhmd-use/SKILL.md)：設定、実行、再開、ジョブ状態、目標時刻までの所要時間、結果解析・可視化。
 
 skillは`.agents/skills/`に同梱しています。[利用例](docs/ja/skills.md)を参照してください。
 グローバルなskill配置や個人設定は変更しません。

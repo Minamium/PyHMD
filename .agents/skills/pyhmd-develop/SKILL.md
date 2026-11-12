@@ -1,69 +1,37 @@
 ---
 name: pyhmd-develop
-description: Develop or review PyHMD source, numerical and API contracts, regression checks, packaging, and bilingual documentation. Use for implementation changes; use pyhmd-use for operating existing simulations and saved results.
+description: Implement or review PyHMD solver, CUDA/MPI, Python API, tests, packaging, or documentation. Use for code changes and regression diagnosis. Use pyhmd-use for operating existing simulations.
 ---
 
 # PyHMD development
 
-Work in the PyHMD checkout associated with the request. Read its
-[AGENTS.md](../../../AGENTS.md) and preserve existing user changes. Keep the user's
-response language; English is primary for project documentation.
+Read the checkout's [AGENTS.md](../../../AGENTS.md) and the contract affected by
+the change. Python owns typed configuration, launch, provenance and results.
+Native C++/CUDA owns state, MPI, RK integration, retries and accepted-step
+accounting. Keep one canonical numerical implementation.
 
-## Route the change
-
-Read only the contracts relevant to the task, then inspect the implementation.
-
-| Change | Read first | Implementation entry |
-| --- | --- | --- |
-| Structure or ownership | [Architecture](../../../docs/architecture.md), [kineticEQ mapping](../../../docs/kineticeq-design.md) | `src/pyhmd/engine.py`, `src/pyhmd/native/include/pyhmd/` |
-| Configuration or public API | [Configuration](../../../docs/configuration.md) | `config.py`, `spec.py`, native `config/native.hpp`, presets |
-| Launch, failure, output, restart | [Results](../../../docs/results.md) | `engine.py`, `runtime/`, `results/`, native `runtime/` and `io/` |
-| Physics, discretization, GPU kernels | [Scientific status](../../../docs/scientific-status.md), [Validation](../../../docs/validation.md) | Native `physics/`, `geometry/`, `numerics/`, `boundaries/` |
-| Build, MPI, device mapping | [HPC](../../../docs/hpc.md) | `backends/`, bundled Makefile, native `distributed/` and `backend/` |
-| Docs or skills | [Documentation index](../../../docs/index.md), [Skills](../../../docs/skills.md) | English primary pages and corresponding Japanese pages |
-
-Paths in implementation entries are relative to `src/pyhmd/` unless marked native.
-
-## Preserve the design
-
-- Keep Python responsible for configuration, explicit build/launch, provenance,
-  and results. Keep state, MPI/CUDA lifetimes, RK stages, retry/rollback, and
-  accepted-step accounting in native code. Do not add per-stage Python transfers.
-- Support the existing coordinates, model, scheme, FP64, and settings unless the
-  task explicitly requests an extension. A registry entry must have a real
-  implementation; do not add silent fallback behavior.
-- Change Python schema, preset/INI conversion, native validation, and interface
-  tests together when a setting's contract changes. Reject unsupported combinations.
-- Keep one numerical definition. Legacy `pymhd` headers forward to canonical
-  `pyhmd` headers. Bundled native sources must remain buildable from an installed
-  wheel outside the checkout.
-- Preserve exclusive output ownership, actual command/binary provenance, terminal
-  states, rejected-trial exclusion from ledgers, and strict checkpoint signatures.
-  A changed native fingerprint is not permission to bypass restart checks.
-- Separate refactoring from numerical changes. For a structural change, preserve
-  trajectories against a frozen reference. For an intentional numerical change,
-  use an independent analytic/conservation/refinement criterion appropriate to it.
-
-## Verify the affected contracts
-
-| Impact | Checks |
+| Change | Entry point and verification |
 | --- | --- |
-| Documentation/skills only | `python3 scripts/check_docs.py`; validate changed skill frontmatter/UI metadata; verify changed examples when needed |
-| Python API or configuration | `make test-python` plus the changed rejection, failure, output, or restart behavior |
-| Native implementation | `make test` and the relevant analytic/invariant/transport checks; migration comparison for refactors |
-| Bundled sources or packaging | Build wheel/sdist; install and build/run outside the checkout |
-| CUDA/MPI behavior | Compile and test the requested backend on authorized hardware; CPU success is not hardware validation |
+| Configuration or API | Change `config.py`, INI/preset conversion and native validation together. Run `make test-python`. [Configuration](../../../docs/configuration.md) |
+| Solver or physics | Inspect native `physics/`, `numerics/`, `geometry/`, `boundaries/` and `runtime/` as applicable. Run `make test` and the relevant analytic, conservation or refinement checks. [Validation](../../../docs/validation.md) |
+| CUDA/MPI | Check `backend/`, `distributed/` and the failed stage log. Compile and test the affected backend, grid and rank count on allocated hardware. [HPC](../../../docs/hpc.md) |
+| Outputs or restart | Preserve output ownership, signatures, schema compatibility, and exclusion of rejected trials from ledgers. [Results](../../../docs/results.md) |
+| Bundled native sources or build | Build wheel/sdist and check an installed wheel's native build and run outside the checkout. [Architecture](../../../docs/architecture.md) |
+| Docs or skills | Update paired English/Japanese docs and run `python3 scripts/check_docs.py`. For skill edits, validate frontmatter and review UI metadata. [Skills](../../../docs/skills.md) |
 
-The [migration script](../../../scripts/verify_migration.py) requires a separately
-preserved old binary. Do not fabricate a baseline by rebuilding both sides from
-the changed tree. Compare identical grid, IC/BC, physics, numerics, and output
-intervals; output scheduling clips dt and can change the trajectory.
+For refactors, compare full state, clocks and ledgers against a separately frozen
+executable and settings. Match the output schedule because it can clip dt.
+For deliberate numerical changes, use an independent physical or analytic
+criterion and record expected differences. [Migration gate](../../../scripts/verify_migration.py)
 
-Keep generated binaries, runs, private cluster details, and credentials out of
-commits. Maintain English/Japanese documentation together; keep API names, schema
-identifiers, commands, and evidence consistent across languages.
+When an operator comparison fails, isolate it from the rest of the suite.
+Start both paths from identical input, compare local owned cells and shared CT
+vertices with the correct global coordinates, and report the absolute difference,
+component, location, and scale. Use an input/stencil scale when the reference
+residual is near zero. Preserve the original failing result and validate any
+revised criterion against a known discrepancy. [Phase 0 evidence](../../../docs/phase0.md)
 
-Report what changed, why, the checks actually executed, and material gaps.
-Distinguish integration completion, numerical integrity, and scientific
-reproduction. Scope cluster execution, job mutation, and repository publication
-to the user's request and existing authorization; skill invocation adds no authority.
+For validation reports, identify the source generation, platform, grid, settings
+and measured stage. Keep numerical changes, CPU checks, GPU build/run checks and
+scientific conclusions identifiable. Commit compact evidence and exclude raw
+runs, binaries and personal cluster details. [Experiment record](../../../docs/experiment-results.md)

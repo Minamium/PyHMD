@@ -151,6 +151,7 @@ machine-readable artifacts remain in English.
 | HPC | [Build and launch](docs/hpc.md) | [HPC実行](docs/ja/hpc.md) |
 | Scientific status | [Scope and gaps](docs/scientific-status.md) | [検証範囲と既知の差](docs/ja/scientific-status.md) |
 | Validation | [Checks and evidence](docs/validation.md) | [検証](docs/ja/validation.md) |
+| Experiment results | [GPU runs and Phase 0 outcome](docs/experiment-results.md) | [実験結果](docs/ja/experiment-results.md) |
 | Agent skills | [Development and use](docs/skills.md) | [開発用・利用用](docs/ja/skills.md) |
 
 Two focused skills are included in `.agents/skills/`:
@@ -158,7 +159,7 @@ Two focused skills are included in `.agents/skills/`:
 - [`$pyhmd-develop`](.agents/skills/pyhmd-develop/SKILL.md): implementation,
   numerical/API contracts, regression checks, packaging, and bilingual docs.
 - [`$pyhmd-use`](.agents/skills/pyhmd-use/SKILL.md): supported configurations,
-  explicit builds, runs, restart, diagnostics, and offline visualization.
+  runs, restart, job status, time-to-target estimates, diagnostics, and plots.
 
 ## Development checks
 

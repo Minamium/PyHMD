@@ -15,6 +15,7 @@ artifacts are not translated.
 | [HPC](hpc.md) | Build targets, MPI launch, PBS/Slurm native execution | [HPC実行](ja/hpc.md) |
 | [Scientific status](scientific-status.md) | Mathematical scope and known reproduction gaps | [科学的検証](ja/scientific-status.md) |
 | [Validation](validation.md) | Test commands, evidence, hardware limits | [検証](ja/validation.md) |
+| [Experiment results](experiment-results.md) | Historical GPU runs, measured t=500 wall time, Phase 0 outcome | [実験結果](ja/experiment-results.md) |
 | [Agent skills](skills.md) | Development and simulation workflows | [skills](ja/skills.md) |
 
 The detailed [low-β thermal regression notes](../tests/thermal_robustness.md)

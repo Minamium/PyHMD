@@ -4,10 +4,9 @@
 
 This work implements the measurement foundation of the
 [original planning input](plans/2026-11-09-high-order-grmhd-roadmap.md), preserved
-in Japanese. The current stopping point is submission of a single-node V100×4
-verification job. **G0 is not complete merely because that job is submitted.**
-No Phase 1 boundary model, high-order production scheme, 3D, SRMHD, or GRMHD is
-registered by this change.
+in Japanese. **G0 remains open.** The first single-node V100×4 job built the
+controls and candidate, then stopped at its first GPU equivalence check.
+[Experiment results](experiment-results.md)
 
 ## Review findings and adjustments
 
@@ -90,10 +89,14 @@ and exactly four scheduler-assigned V100 devices; it does not choose free GPUs.
 The suite builds controls/candidates in separate directories and freezes SHA256s
 before integration.
 
-The sequence is periodic-mean-field checks; CPU migration at 1/2/4 ranks;
-common-input CPU/CUDA, decomposition and generation comparisons; GPU repeat,
-restart and forced retry; oblique/linear convergence; then conditional noise
-ensembles. Each noise group uses 16 density perturbations of amplitude 1e−13 plus
+Job 245473 stopped at the first cached/uncached RHS check with the 1200×256
+grid and four ranks. The test logged the failed assertion and omitted the
+measured difference and location. [Job record](validation/rokko_experiments_20261112.json)
+
+After that check, the planned sequence covers periodic mean fields, CPU
+migration at 1/2/4 ranks, common-input CPU/CUDA and decomposition/generation
+comparisons, GPU repeat/restart/forced retry, oblique/linear convergence,
+and conditional noise ensembles. Each noise group uses 16 density perturbations of amplitude 1e−13 plus
 an unperturbed control, grid 600×128, t=200, and fixed output scheduling. The four
 groups are default/strict × face_hll/corner_hll. Invalid baselines/members cannot
 qualify a noise floor. A timed-out case stops the suite before another GPU case.

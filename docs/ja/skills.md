@@ -8,7 +8,7 @@
 | 名前 | 担当 | 本文 |
 | --- | --- | --- |
 | `$pyhmd-develop` | 実装、数値/APIの契約、テスト、配布、文書 | [SKILL.md](../../.agents/skills/pyhmd-develop/SKILL.md) |
-| `$pyhmd-use` | 既存設定、ビルド、実行、再開、診断、可視化 | [SKILL.md](../../.agents/skills/pyhmd-use/SKILL.md) |
+| `$pyhmd-use` | ジョブ状態、所要時間、設定、実行、再開、診断、可視化 | [SKILL.md](../../.agents/skills/pyhmd-use/SKILL.md) |
 
 このcheckoutのチャットで名前を指定します。クライアントがリポジトリのskillをまだ読み込んでいなければ、
 上記`SKILL.md`のパスを明示してください。グローバルなskill配置やユーザ設定は変更しません。
@@ -17,6 +17,7 @@
 $pyhmd-develop を使って結果manifestのAPIを修正し、再開の互換性を検証して。
 $pyhmd-develop を使ってCUDAの再構成kernelを数値式を変えずに整理して。
 $pyhmd-use を使って、確保済み単GPUで600×128の円盤計算を実行する設定を用意して。
+$pyhmd-use を使って、このPBSジョブの状態を確認し、同等条件の診断からt=500までの所要時間を見積もって。
 $pyhmd-use を使って、この結果の内部円盤と輸送診断を可視化して。
 ```
 
